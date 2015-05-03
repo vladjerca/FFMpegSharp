@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFMpegSharp", "FFMpegSharp\FFMpegSharp.csproj", "{5CEC6504-BD25-45D0-830C-A2162F4AAD12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFMpegSharp.Tests", "FFMpegSharp.Tests\FFMpegSharp.Tests.csproj", "{9AB65907-1897-4A20-B89E-11682D9D092D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFMpegSharp.Example", "FFMpegSharp.Example\FFMpegSharp.Example.csproj", "{9402669C-5507-4142-A2F1-42F6FA817465}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5CEC6504-BD25-45D0-830C-A2162F4AAD12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CEC6504-BD25-45D0-830C-A2162F4AAD12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CEC6504-BD25-45D0-830C-A2162F4AAD12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CEC6504-BD25-45D0-830C-A2162F4AAD12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AB65907-1897-4A20-B89E-11682D9D092D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AB65907-1897-4A20-B89E-11682D9D092D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AB65907-1897-4A20-B89E-11682D9D092D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AB65907-1897-4A20-B89E-11682D9D092D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9402669C-5507-4142-A2F1-42F6FA817465}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9402669C-5507-4142-A2F1-42F6FA817465}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9402669C-5507-4142-A2F1-42F6FA817465}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9402669C-5507-4142-A2F1-42F6FA817465}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5CEC6504-BD25-45D0-830C-A2162F4AAD12}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FFMpegSharp</RootNamespace>
+    <AssemblyName>FFMpegSharp</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Enums\Speed.cs" />
+    <Compile Include="Enums\VideoSize.cs" />
+    <Compile Include="FFMpeg.cs" />
+    <Compile Include="FFProbe.cs" />
+    <Compile Include="Helpers\FFMpegHelper.cs" />
+    <Compile Include="Helpers\FFProbeHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VideoInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\bin\ffmpeg.exe" />
+    <Content Include="Resources\bin\ffprobe.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\presets\ffprobe.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Resources\presets\libvpx-1080p.ffpreset" />
+    <None Include="Resources\presets\libvpx-1080p50_60.ffpreset" />
+    <None Include="Resources\presets\libvpx-360p.ffpreset" />
+    <None Include="Resources\presets\libvpx-720p.ffpreset" />
+    <None Include="Resources\presets\libvpx-720p50_60.ffpreset" />
+    <None Include="Resources\presets\libvpx-ultrafast.ffpreset" />
+    <None Include="Resources\presets\libx264-baseline.ffpreset" />
+    <None Include="Resources\presets\libx264-fast.ffpreset" />
+    <None Include="Resources\presets\libx264-faster.ffpreset" />
+    <None Include="Resources\presets\libx264-faster_firstpass.ffpreset" />
+    <None Include="Resources\presets\libx264-fast_firstpass.ffpreset" />
+    <None Include="Resources\presets\libx264-ipod320.ffpreset" />
+    <None Include="Resources\presets\libx264-ipod640.ffpreset" />
+    <None Include="Resources\presets\libx264-lossless_fast.ffpreset" />
+    <None Include="Resources\presets\libx264-lossless_max.ffpreset" />
+    <None Include="Resources\presets\libx264-lossless_medium.ffpreset" />
+    <None Include="Resources\presets\libx264-lossless_slow.ffpreset" />
+    <None Include="Resources\presets\libx264-lossless_slower.ffpreset" />
+    <None Include="Resources\presets\libx264-lossless_ultrafast.ffpreset" />
+    <None Include="Resources\presets\libx264-main.ffpreset" />
+    <None Include="Resources\presets\libx264-medium.ffpreset" />
+    <None Include="Resources\presets\libx264-medium_firstpass.ffpreset" />
+    <None Include="Resources\presets\libx264-placebo.ffpreset" />
+    <None Include="Resources\presets\libx264-placebo_firstpass.ffpreset" />
+    <None Include="Resources\presets\libx264-slow.ffpreset" />
+    <None Include="Resources\presets\libx264-slower.ffpreset" />
+    <None Include="Resources\presets\libx264-slower_firstpass.ffpreset" />
+    <None Include="Resources\presets\libx264-slow_firstpass.ffpreset" />
+    <None Include="Resources\presets\libx264-superfast.ffpreset" />
+    <None Include="Resources\presets\libx264-superfast_firstpass.ffpreset" />
+    <None Include="Resources\presets\libx264-ultrafast.ffpreset" />
+    <None Include="Resources\presets\libx264-ultrafast_firstpass.ffpreset" />
+    <None Include="Resources\presets\libx264-veryfast.ffpreset" />
+    <None Include="Resources\presets\libx264-veryfast_firstpass.ffpreset" />
+    <None Include="Resources\presets\libx264-veryslow.ffpreset" />
+    <None Include="Resources\presets\libx264-veryslow_firstpass.ffpreset" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

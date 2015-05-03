@@ -1,0 +1,5 @@
+G:\GitHub\Personal\FFMpegSharp\FFMpegSharp\bin\Debug\FFMpegSharp.dll
+G:\GitHub\Personal\FFMpegSharp\FFMpegSharp\bin\Debug\FFMpegSharp.pdb
+G:\GitHub\Personal\FFMpegSharp\FFMpegSharp\obj\Debug\FFMpegSharp.csprojResolveAssemblyReference.cache
+G:\GitHub\Personal\FFMpegSharp\FFMpegSharp\obj\Debug\FFMpegSharp.dll
+G:\GitHub\Personal\FFMpegSharp\FFMpegSharp\obj\Debug\FFMpegSharp.pdb
