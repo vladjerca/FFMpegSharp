@@ -24,7 +24,7 @@ static void Main(string[] args)
             // loaded from configuration
             FFProbe infoDecoder = new FFProbe();
 
-            string output = infoDecoder.GetVideoInfo(inputFile).ToString();
+            string output = infoDecoder.ParseVideoInfo(inputFile).ToString();
 
             Console.WriteLine(output);
         }

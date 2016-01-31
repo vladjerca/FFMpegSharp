@@ -49,9 +49,9 @@ namespace FFMpegSharp.FFMPEG
         /// </summary>
         /// <param name="source">Source video file.</param>
         /// <returns>A video info object containing all details necessary.</returns>
-        public VideoInfo GetVideoInfo(string source)
+        public VideoInfo ParseVideoInfo(string source)
         {
-            return GetVideoInfo(new VideoInfo(source));
+            return ParseVideoInfo(new VideoInfo(source));
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace FFMpegSharp.FFMPEG
         /// </summary>
         /// <param name="source">Source video file.</param>
         /// <returns>A video info object containing all details necessary.</returns>
-        public VideoInfo GetVideoInfo(VideoInfo source)
+        public VideoInfo ParseVideoInfo(VideoInfo source)
         {
             string jsonOutput = RunProcess(string.Format("-v quiet -print_format json -show_streams {0}", source.Path));
 
@@ -106,15 +106,6 @@ namespace FFMpegSharp.FFMPEG
             source.FrameRate = Math.Round(double.Parse(fr[0]) / double.Parse(fr[1]), 3);
 
             return source;
-        }
-
-        /// <summary>
-        /// Sets the video info for a specific file.
-        /// </summary>
-        /// <param name="source">Targeted video file.</param>
-        public void SetVideoInfo(ref VideoInfo source)
-        {
-            source = GetVideoInfo(source);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace FFMpegSharp
                 throw new ArgumentException(string.Format("Input file {0} does not exist!", path));
 
             _File = new FileInfo(path);
-            new FFProbe().GetVideoInfo(this);
+            new FFProbe().ParseVideoInfo(this);
         }
 
         public override string ToString()
