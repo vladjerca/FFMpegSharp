@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFMpegSharp.FFMPEG;
+using System;
 using System.Configuration;
 
 namespace FFMpegSharp.Example
@@ -11,10 +12,6 @@ namespace FFMpegSharp.Example
                     outputFile = "<OUTPUT_DIR>\\<OUTPUT_FILENAME>.<OUTPUT_EXTENSION>";
 
             FFMpeg encoder = new FFMpeg();
-            /*
-                Alternative: 
-                    FFMpeg encoder = new FFMpeg(".../<FFMPEG_EXE_ROOT>");
-            */
 
             // Bind Progress Handler
             encoder.OnProgress += encoder_OnProgress;

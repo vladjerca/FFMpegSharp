@@ -1,4 +1,5 @@
-﻿using FFMpegSharp.Tests.Resources;
+﻿using FFMpegSharp.FFMPEG;
+using FFMpegSharp.Tests.Resources;
 using System.IO;
 
 namespace FFMpegSharp.Tests

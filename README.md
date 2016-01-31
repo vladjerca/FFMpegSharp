@@ -21,9 +21,8 @@ static void Main(string[] args)
         {
             string inputFile = "G:\\input.mp4";
             
-            // string ffmpegRoot = ConfigurationManager.AppSettings["ffmpegRoot"]
-            // the is loaded implicitly from configuration if it is not passed as an argument to the constructor
-            FFProbe infoDecoder = new FFProbe(ffmpegRoot);
+            // loaded from configuration
+            FFProbe infoDecoder = new FFProbe();
 
             string output = infoDecoder.GetVideoInfo(inputFile).ToString();
 
@@ -54,8 +53,8 @@ static void Main(string[] args)
         {
             string  inputFile = "input_path_goes_here",
                     outputFile = "output_path_goes_here";
-            // string ffmpegRoot = ConfigurationManager.AppSettings["ffmpegRoot"]
-            // the is loaded implicitly from configuration if it is not passed as an argument to the constructor
+            // string ffmpegRoot = 
+            // FFMpeg / FFProbe root must be set in the application configuration -> Key: "ffmpegRoot"
             FFMpeg encoder = new FFMpeg();
             
             // easily track conversion progress
@@ -94,7 +93,7 @@ static void Main(string[] args)
         {
             string ffmpegRoot = ConfigurationManager.AppSettings["ffmpegRoot"];
             
-            FFMpeg encoder = new FFMpeg(ffmpegRoot);
+            FFMpeg encoder = new FFMpeg();
 
             encoder.Join(@"..\joined_video.mp4", @"..\part1.mp4", @"..\part2.mp4", @"..\part3.mp4");
         }
@@ -107,7 +106,7 @@ static void Main(string[] args)
             string inputFile = "input_path_goes_here",
                    outputFile = "output_path_goes_here";
 
-            FFMpeg encoder = new FFMpeg(ffmpegRoot);
+            FFMpeg encoder = new FFMpeg();
 
             encoder.Mute(inputFile, outputFile);
         }
@@ -120,7 +119,7 @@ static void Main(string[] args)
             string inputVideoFile = "input_path_goes_here",
                    outputAudioFile = "output_path_goes_here";
 
-            FFMpeg encoder = new FFMpeg(ffmpegRoot);
+            FFMpeg encoder = new FFMpeg();
 
             encoder.SaveAudio(inputVideoFile, outputAudioFile);
         }
@@ -134,7 +133,7 @@ static void Main(string[] args)
                    inputAudioFile = "input_path_goes_here",
                    outputVideoFile = "output_path_goes_here";
 
-            FFMpeg encoder = new FFMpeg(ffmpegRoot);
+            FFMpeg encoder = new FFMpeg();
 
             encoder.AddAudio(inputVideoFile, inputAudioFile, outputVideoFile);
         }
@@ -148,7 +147,7 @@ static void Main(string[] args)
                    inputAudioFile = "input_path_goes_here",
                    outputVideoFile = "output_path_goes_here";
 
-            FFMpeg encoder = new FFMpeg(ffmpegRoot);
+            FFMpeg encoder = new FFMpeg();
 
             encoder.AddAudio(inputImageFile, inputAudioFile, outputVideoFile);
         }
@@ -161,7 +160,7 @@ static void Main(string[] args)
             string inputVideoFile = "input_path_goes_here",
                    outputVideoFile = "input_path_goes_here";
                    
-            FFMpeg encoder = new FFMpeg(ffmpegRoot);
+            FFMpeg encoder = new FFMpeg();
             
             // start the conversion process
             Task.Run(() => {

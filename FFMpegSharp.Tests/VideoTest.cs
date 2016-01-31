@@ -14,10 +14,6 @@ namespace FFMpegSharp.Tests
             string output = Input.OutputLocation(type);
 
             try { 
-                
-                if (File.Exists(output))
-                    File.Delete(output);
-
                 switch (type)
                 {
                     case VideoType.MP4:

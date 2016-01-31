@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFMpegSharp.FFMPEG;
+using System;
 using System.IO;
 
 namespace FFMpegSharp
@@ -18,8 +19,10 @@ namespace FFMpegSharp
         public VideoInfo(string path)
         {
             if (!File.Exists(path))
-                throw new Exception("Video file does not exist.");
+                throw new ArgumentException(string.Format("Input file {0} does not exist!", path));
+
             _File = new FileInfo(path);
+            new FFProbe().GetVideoInfo(this);
         }
 
         public override string ToString()

@@ -1,6 +1,5 @@
-﻿using FFMpegSharp.Enums;
+﻿using FFMpegSharp.FFMPEG.Enums;
 using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace FFMpegSharp.Helpers
@@ -15,7 +14,7 @@ namespace FFMpegSharp.Helpers
             {
                 case VideoSize.FullHD: scale += "-1:1080"; break;
                 case VideoSize.HD: scale += "-1:720"; break;
-                case VideoSize.ED: scale += "-1: 480"; break;
+                case VideoSize.ED: scale += "-1:480"; break;
                 case VideoSize.LD: scale += "-1:360"; break;
                 default: scale = ""; break;
             }
