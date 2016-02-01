@@ -27,29 +27,32 @@ namespace FFMpegSharp.Tests.Resources
 
     public static class VideoLibrary
     {
-        public static readonly string LocalVideo = ".\\Resources\\input.mp4";
-        public static readonly string LocalVideoNoAudio = ".\\Resources\\mute.mp4";
-        public static readonly string LocalAudio = ".\\Resources\\audio.mp3";
-        public static readonly string LocalCover = ".\\Resources\\cover.png";
+        public static readonly FileInfo LocalVideo = new FileInfo(".\\Resources\\input.mp4");
+        public static readonly FileInfo LocalVideoNoAudio = new FileInfo(".\\Resources\\mute.mp4");
+        public static readonly FileInfo LocalAudio = new FileInfo(".\\Resources\\audio.mp3");
+        public static readonly FileInfo LocalCover = new FileInfo(".\\Resources\\cover.png");
 
-        public static string OutputLocation(this FileInfo file, VideoType type)
+        public static FileInfo OutputLocation(this FileInfo file, VideoType type)
         {
             return OutputLocation(file, type, "_converted");
         }
 
-        public static string OutputLocation(this FileInfo file, AudioType type)
+        public static FileInfo OutputLocation(this FileInfo file, AudioType type)
         {
             return OutputLocation(file, type, "_audio");
         }
 
-        public static string OutputLocation(this FileInfo file, ImageType type)
+        public static FileInfo OutputLocation(this FileInfo file, ImageType type)
         {
             return OutputLocation(file, type, "_screenshot");
         }
 
-        private static string OutputLocation(FileInfo file, Enum type, string keyword)
+        private static FileInfo OutputLocation(FileInfo file, Enum type, string keyword)
         {
-            return file.Directory.FullName + "\\" + file.Name.Replace(file.Extension, keyword + "." + type.ToString().ToLower());
+            string originalLocation = file.Directory.FullName,
+                   outputFile = file.Name.Replace(file.Extension, keyword + "." + type.ToString().ToLower());
+
+            return new FileInfo(string.Format("{0}\\{1}", originalLocation, outputFile));
         }
     }
 }

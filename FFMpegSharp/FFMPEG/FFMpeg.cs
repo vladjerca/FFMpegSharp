@@ -1,11 +1,10 @@
 ﻿using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace FFMpegSharp.FFMPEG
@@ -20,7 +19,7 @@ namespace FFMpegSharp.FFMPEG
 
         private volatile string errorData = string.Empty;
 
-        private bool RunProcess(string args, string output)
+        private bool RunProcess(string args, FileInfo output)
         {
             bool SuccessState = true;
 
@@ -41,8 +40,8 @@ namespace FFMpegSharp.FFMPEG
             {
                 process.Close();
 
-                if (File.Exists(output))
-                    using (var file = File.Open(output, FileMode.Open))
+                if (File.Exists(output.FullName))
+                    using (var file = File.Open(output.FullName, FileMode.Open))
                     {
                         if (file.Length == 0)
                         {
@@ -92,15 +91,12 @@ namespace FFMpegSharp.FFMPEG
         /// Intializes the FFMPEG encoder.
         /// </summary>
         /// <param name="rootPath">Directory root where ffmpeg.exe can be found. If not specified, root will be loaded from config.</param>
-        public FFMpeg(string rootPath = null)
+        public FFMpeg()
         {
-            if (rootPath == null)
-                rootPath = ConfigurationManager.AppSettings["ffmpegRoot"];
+            FFMpegHelper.RootExceptionCheck(configuredRoot);
+            FFProbeHelper.RootExceptionCheck(configuredRoot);
 
-            FFMpegHelper.RootExceptionCheck(rootPath);
-            FFProbeHelper.RootExceptionCheck(rootPath);
-
-            ffmpegPath = rootPath + "\\ffmpeg.exe";
+            ffmpegPath = configuredRoot + "\\ffmpeg.exe";
         }
 
         /// <summary>
@@ -108,40 +104,30 @@ namespace FFMpegSharp.FFMPEG
         /// </summary>
         /// <param name="source">Source video file.</param>
         /// <param name="output">Output video file</param>
-        /// <param name="seek">Seek position where the thumbnail should be taken.</param>
+        /// <param name="captureTime">Seek position where the thumbnail should be taken.</param>
         /// <param name="thumbWidth">Thumbnail width.</param>
         /// <param name="thumbHeight">Thumbnail height.</param>
         /// <returns>Success state.</returns>
-        public bool SaveThumbnail(VideoInfo source, string output, TimeSpan? seek = null, int thumbWidth = 300, int thumbHeight = 169)
+        public bool SaveThumbnail(VideoInfo source, FileInfo output, Size? size = null, TimeSpan? captureTime = null)
         {
-            if (seek == null)
-                seek = new TimeSpan(0, 0, 7);
+            if (captureTime == null)
+                captureTime = TimeSpan.FromSeconds(source.Duration.TotalSeconds / 3);
+
+            if (size == null)
+                size = new Size(source.Width, source.Height);
 
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.ExtensionExceptionCheck(output, ".png");
 
             string thumbArgs,
-                   thumbSize = thumbWidth.ToString() + "x" + thumbHeight.ToString();
+                   thumbSize = string.Format("{0}x{1}", source.Width, source.Height);
+
             thumbArgs = String.Format("-i \"{0}\" -vcodec png -vframes 1 -ss {1} -s {2} \"{3}\"", source.Path,
-                                                                                                  seek.ToString(),
+                                                                                                  captureTime,
                                                                                                   thumbSize,
                                                                                                   output);
 
             return RunProcess(thumbArgs, output);
-        }
-
-        /// <summary>
-        /// Saves a 'png' thumbnail from the input video.
-        /// </summary>
-        /// <param name="source">Source video file.</param>
-        /// <param name="output">Output video file</param>
-        /// <param name="seek">Seek position where the thumbnail should be taken.</param>
-        /// <param name="thumbWidth">Thumbnail width.</param>
-        /// <param name="thumbHeight">Thumbnail height.</param>
-        /// <returns>Success state.</returns>
-        public bool SaveThumbnail(string source, string output, TimeSpan? seek = null, int thumbWidth = 300, int thumbHeight = 169)
-        {
-            return SaveThumbnail(new VideoInfo(source), output, seek, thumbWidth, thumbHeight);
         }
 
         /// <summary>
@@ -153,7 +139,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="size">Output video size.</param>
         /// <param name="multithread">Use multithreading for conversion.</param>
         /// <returns>Success state.</returns>
-        public bool ToMP4(VideoInfo source, string output, Speed speed = Speed.SuperFast, VideoSize size = VideoSize.Original, bool multithread = false)
+        public bool ToMP4(VideoInfo source, FileInfo output, Speed speed = Speed.SuperFast, VideoSize size = VideoSize.Original, AudioQuality aQuality = AudioQuality.Normal, bool multithread = false)
         {
             totalTime = source.Duration;
 
@@ -164,27 +150,14 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.ExtensionExceptionCheck(output, ".mp4");
 
-            string conversionArgs = string.Format("-i \"{0}\" -threads {1} {2} -b:v 2000k -vcodec libx264 -preset {3} -g 30 -codec:a aac -b:a 256k -strict experimental \"{4}\"", source.Path,
+            string conversionArgs = string.Format("-i \"{0}\" -threads {1} {2} -b:v 2000k -vcodec libx264 -preset {3} -g 30 -codec:a aac -b:a {4}k -strict experimental \"{5}\"", source.Path,
                                                                                                                                                                                   threadCount,
                                                                                                                                                                                   scale,
                                                                                                                                                                                   speed.ToString().ToLower(),
+                                                                                                                                                                                  (int)aQuality,
                                                                                                                                                                                   output);
 
             return RunProcess(conversionArgs, output);
-        }
-
-        /// <summary>
-        /// Converts a source video to MP4 format.
-        /// </summary>
-        /// <param name="source">Source video file.</param>
-        /// <param name="output">Output video file.</param>
-        /// <param name="speed">Conversion speed preset.</param>
-        /// <param name="size">Output video size.</param>
-        /// <param name="multithread">Use multithreading for conversion.</param>
-        /// <returns>Success state.</returns>
-        public bool ToMP4(string source, string output, Speed speed = Speed.SuperFast, VideoSize size = VideoSize.Original, bool multithread = false)
-        {
-            return ToMP4(new VideoInfo(source), output, speed, size, multithread);
         }
 
         /// <summary>
@@ -195,7 +168,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="size">Output video size.</param>
         /// <param name="multithread">Use multithreading for conversion.</param>
         /// <returns>Success state.</returns>
-        public bool ToWebM(VideoInfo source, string output, VideoSize size = VideoSize.Original, bool multithread = false)
+        public bool ToWebM(VideoInfo source, FileInfo output, VideoSize size = VideoSize.Original, AudioQuality aQuality = AudioQuality.Normal, bool multithread = false)
         {
             totalTime = source.Duration;
 
@@ -206,25 +179,13 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.ExtensionExceptionCheck(output, ".webm");
 
-            string conversionArgs = string.Format("-i \"{0}\" -threads {1} {2} -vcodec libvpx -quality good -cpu-used 0 -b:v 1500k -qmin 10 -qmax 42 -maxrate 500k -bufsize 1000k -codec:a libvorbis -b:a 128k \"{3}\"", source.Path,
+            string conversionArgs = string.Format("-i \"{0}\" -threads {1} {2} -vcodec libvpx -quality good -cpu-used 16 -deadline realtime -b:v 2000k -qmin 10 -qmax 42 -maxrate 500k -bufsize 1000k -codec:a libvorbis -b:a {3}k \"{4}\"", source.Path,
                                                                                                                                                                                                                          threadCount,
                                                                                                                                                                                                                          scale,
+                                                                                                                                                                                                                         (int)aQuality,
                                                                                                                                                                                                                          output);
 
             return RunProcess(conversionArgs, output);
-        }
-
-        /// <summary>
-        /// Converts a source video to WebM format.
-        /// </summary>
-        /// <param name="source">Source video file.</param>
-        /// <param name="output">Output video file.</param>
-        /// <param name="size">Output video size.</param>
-        /// <param name="multithread">Use multithreading for conversion.</param>
-        /// <returns>Success state.</returns>
-        public bool ToWebM(string source, string output, VideoSize size = VideoSize.Original, bool multithread = false)
-        {
-            return ToWebM(new VideoInfo(source), output, size, multithread);
         }
 
         /// <summary>
@@ -235,7 +196,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="size">Output video size.</param>
         /// <param name="multithread">Use multithreading for conversion.</param>
         /// <returns>Success state.</returns>
-        public bool ToOGV(VideoInfo source, string output, VideoSize size = VideoSize.Original, bool multithread = false)
+        public bool ToOGV(VideoInfo source, FileInfo output, VideoSize size = VideoSize.Original, AudioQuality aQuality = AudioQuality.Normal, bool multithread = false)
         {
             totalTime = source.Duration;
 
@@ -246,24 +207,12 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.ExtensionExceptionCheck(output, ".ogv");
 
-            string conversionArgs = string.Format("-i \"{0}\" -threads {1} {2} -codec:v libtheora -qscale:v 7 -codec:a libvorbis -qscale:a 5 \"{3}\"", source.Path,
+            string conversionArgs = string.Format("-i \"{0}\" -threads {1} {2} -codec:v libtheora -qscale:v 7 -cpu-used 16 -deadline realtime -codec:a libvorbis -codec:a libvorbis -b:a {3}k -qscale:a 5 \"{4}\"", source.Path,
                                                                                                                                                        threadCount,
                                                                                                                                                        scale,
+                                                                                                                                                       (int)aQuality,
                                                                                                                                                        output);
             return RunProcess(conversionArgs, output);
-        }
-
-        /// <summary>
-        /// Converts a source video to OGV format.
-        /// </summary>
-        /// <param name="source">Source video file.</param>
-        /// <param name="output">Output video file.</param>
-        /// <param name="size">Output video size.</param>
-        /// <param name="multithread">Use multithreading for conversion.</param>
-        /// <returns>Success state.</returns>
-        public bool ToOGV(string source, string output, VideoSize size = VideoSize.Original, bool multithread = false)
-        {
-            return ToOGV(new VideoInfo(source), output, size, true);
         }
 
         /// <summary>
@@ -272,7 +221,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="source">Source video file.</param>
         /// <param name="output">Output video file.</param>
         /// <returns>Success state.</returns>
-        public bool ToTS(VideoInfo source, string output)
+        public bool ToTS(VideoInfo source, FileInfo output)
         {
             totalTime = source.Duration;
 
@@ -284,29 +233,64 @@ namespace FFMpegSharp.FFMPEG
         }
 
         /// <summary>
-        /// Converts a source video to TS format.
+        /// Adds a poster image to an audio file.
         /// </summary>
-        /// <param name="source">Source video file.</param>
+        /// <param name="image">Source image file.</param>
+        /// <param name="audio">Source audio file.</param>
         /// <param name="output">Output video file.</param>
-        /// <returns>Success state.</returns>
-        public bool ToTS(string source, string output)
+        /// <returns></returns>
+        public bool AddPosterToAudio(FileInfo image, FileInfo audio, FileInfo output)
         {
-            return ToTS(new VideoInfo(source), output);
+            FFMpegHelper.InputFilesExistExceptionCheck(image, audio);
+            FFMpegHelper.ExtensionExceptionCheck(output, ".mp4");
+
+            string args = string.Format("-loop 1 -i \"{0}\" -i \"{1}\" -b:v 2000k -vcodec libx264 -c:a aac -strict experimental -shortest \"{2}\"", image, audio, output);
+
+            return RunProcess(args, output);
+        }
+
+        /// <summary>
+        /// Joins a list of video files.
+        /// </summary>
+        /// <param name="output">Output video file.</param>
+        /// <param name="videos">List of vides that need to be joined together.</param>
+        /// <returns>Success state.</returns>
+        public bool Join(FileInfo output, params VideoInfo[] videos)
+        {
+            string[] pathList = new string[videos.Length];
+            for (int i = 0; i < pathList.Length; i++)
+            {
+                pathList[i] = videos[i].Path.Replace(videos[i].Extension, ".ts");
+                ToTS(videos[i], new FileInfo(videos[i].Path.Replace("mp4", "ts")));
+            }
+
+            string conversionArgs = string.Format("-i \"concat:{0}\" -c copy -bsf:a aac_adtstoasc \"{1}\"", string.Join(@"|", (object[])pathList), output);
+            bool result = RunProcess(conversionArgs, output);
+
+            if (result)
+                foreach (string path in pathList)
+                    if (File.Exists(path))
+                        File.Delete(path);
+
+            return result;
         }
 
         /// <summary>
         /// Records M3U8 streams to the specified output.
         /// </summary>
-        /// <param name="httpStream">URI to pointing towards stream.</param>
+        /// <param name="uri">URI to pointing towards stream.</param>
         /// <param name="output">Output file</param>
         /// <returns>Success state.</returns>
-        public bool SaveM3U8Stream(string httpStream, string output)
+        public bool SaveM3U8Stream(Uri uri, FileInfo output)
         {
             FFMpegHelper.ExtensionExceptionCheck(output, ".mp4");
 
-            string conversionArgs = string.Format("-i \"{0}\" \"{1}\"", httpStream, output);
-
-            return RunProcess(conversionArgs, output);
+            if (uri.Scheme == "http" || uri.Scheme == "https")
+            {
+                string conversionArgs = string.Format("-i \"{0}\" \"{1}\"", uri.AbsoluteUri, output);
+                return RunProcess(conversionArgs, output);
+            }
+            else throw new ArgumentException("Uri: {0}, does not point to a valid http(s) stream.", uri.AbsoluteUri);
         }
 
         /// <summary>
@@ -315,18 +299,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="source">Source video file.</param>
         /// <param name="output">Output video file.</param>
         /// <returns></returns>
-        public bool Mute(string source, string output)
-        {
-            return Mute(new VideoInfo(source), output);
-        }
-
-        /// <summary>
-        /// Strips a video file of audio.
-        /// </summary>
-        /// <param name="source">Source video file.</param>
-        /// <param name="output">Output video file.</param>
-        /// <returns></returns>
-        public bool Mute(VideoInfo source, string output)
+        public bool Mute(VideoInfo source, FileInfo output)
         {
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.ExtensionExceptionCheck(output, source.Extension);
@@ -342,18 +315,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="source">Source video file.</param>
         /// <param name="output">Output audio file.</param>
         /// <returns>Success state.</returns>
-        public bool SaveAudio(string source, string output)
-        {
-            return SaveAudio(new VideoInfo(source), output);
-        }
-
-        /// <summary>
-        /// Saves audio from a specific video file to disk.
-        /// </summary>
-        /// <param name="source">Source video file.</param>
-        /// <param name="output">Output audio file.</param>
-        /// <returns>Success state.</returns>
-        public bool SaveAudio(VideoInfo source, string output)
+        public bool SaveAudio(VideoInfo source, FileInfo output)
         {
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.ExtensionExceptionCheck(output, ".mp3");
@@ -371,20 +333,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="output">Output video file.</param>
         /// <param name="stopAtShortest">Indicates if the encoding should stop at the shortest input file.</param>
         /// <returns>Success state</returns>
-        public bool AddAudio(string source, string audio, string output, bool stopAtShortest = false)
-        {
-            return AddAudio(new VideoInfo(source), audio, output);
-        }
-
-        /// <summary>
-        /// Adds audio to a video file.
-        /// </summary>
-        /// <param name="source">Source video file.</param>
-        /// <param name="audio">Source audio file.</param>
-        /// <param name="output">Output video file.</param>
-        /// <param name="stopAtShortest">Indicates if the encoding should stop at the shortest input file.</param>
-        /// <returns>Success state</returns>
-        public bool AddAudio(VideoInfo source, string audio, string output, bool stopAtShortest = false)
+        public bool AddAudio(VideoInfo source, FileInfo audio, FileInfo output, bool stopAtShortest = false)
         {
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.InputFilesExistExceptionCheck(audio);
@@ -393,92 +342,6 @@ namespace FFMpegSharp.FFMPEG
             string args = string.Format("-i \"{0}\" -i \"{1}\" -c:v copy -c:a aac -strict experimental {3} \"{2}\"", source.Path, audio, output, stopAtShortest ? "-shortest" : "");
 
             return RunProcess(args, output);
-        }
-
-        /// <summary>
-        /// Adds a poster image to an audio file.
-        /// </summary>
-        /// <param name="image">Source image file.</param>
-        /// <param name="audio">Source audio file.</param>
-        /// <param name="output">Output video file.</param>
-        /// <returns></returns>
-        public bool AddPosterToAudio(string image, string audio, string output)
-        {
-            FFMpegHelper.InputFilesExistExceptionCheck(image, audio);
-            FFMpegHelper.ExtensionExceptionCheck(output, ".mp4");
-
-            string args = string.Format("-loop 1 -i \"{0}\" -i \"{1}\" -b:v 2000k -vcodec libx264 -c:a aac -strict experimental -shortest \"{2}\"", image, audio, output);
-
-            return RunProcess(args, output);
-        }
-
-        /// <summary>
-        /// Joins a list of video files.
-        /// </summary>
-        /// <param name="output">Output video file.</param>
-        /// <param name="videos">List of vides that need to be joined together.</param>
-        /// <returns>Success state.</returns>
-        public bool Join(string output, params VideoInfo[] videos)
-        {
-            string[] pathList = new string[videos.Length];
-            for (int i = 0; i < pathList.Length; i++)
-            {
-                pathList[i] = videos[i].Path.Replace(videos[i].Extension, ".ts");
-                ToTS(videos[i].Path, videos[i].Path.Replace("mp4", "ts"));
-            }
-
-            string conversionArgs = string.Format("-i \"concat:{0}\" -c copy -bsf:a aac_adtstoasc \"{1}\"", string.Join(@"|", (object[])pathList), output);
-            bool result = RunProcess(conversionArgs, output);
-
-            if(result)
-                foreach (string path in pathList)
-                    if (File.Exists(path))
-                        File.Delete(path);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Joins a list of video files.
-        /// </summary>
-        /// <param name="output">Output video file.</param>
-        /// <param name="videos">List of vides that need to be joined together.</param>
-        /// <returns>Success state.</returns>
-        public bool Join(string output, params string[] videos)
-        {
-            if(videos.Length > 0)
-            {
-                VideoInfo[] infoList = new VideoInfo[videos.Length];
-                for (int i = 0; i < videos.Length; i++)
-                {
-                    var vidInfo = new VideoInfo(videos[i]);
-                    infoList[i] = vidInfo;
-                }
-                return Join(output, infoList);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Joins a list of video files.
-        /// </summary>
-        /// <param name="output">Output video file.</param>
-        /// <param name="videos">List of vides that need to be joined together.</param>
-        /// <returns>Success state.</returns>
-        public bool Join(string output, IEnumerable<VideoInfo> videos)
-        {
-            return Join(output, videos.ToArray());
-        }
-
-        /// <summary>
-        /// Joins a list of video files.
-        /// </summary>
-        /// <param name="output">Output video file.</param>
-        /// <param name="videos">List of vides that need to be joined together.</param>
-        /// <returns>Success state.</returns>
-        public bool Join(string output, IEnumerable<string> videos)
-        {
-            return Join(output, videos.ToArray());
         }
 
         /// <summary>

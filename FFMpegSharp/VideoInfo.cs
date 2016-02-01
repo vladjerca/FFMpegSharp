@@ -7,6 +7,7 @@ namespace FFMpegSharp
     public class VideoInfo
     {
         private FileInfo _File;
+
         public TimeSpan Duration { get; set; }
         public string AudioFormat { get; set; }
         public string VideoFormat { get; set; }
@@ -16,14 +17,17 @@ namespace FFMpegSharp
         public int Width { get; set; }
         public double Size { get; set; }
 
-        public VideoInfo(string path)
+        public VideoInfo(FileInfo fileInfo)
         {
-            if (!File.Exists(path))
-                throw new ArgumentException(string.Format("Input file {0} does not exist!", path));
+            if(!fileInfo.Exists)
+                throw new ArgumentException(string.Format("Input file {0} does not exist!", fileInfo.FullName));
 
-            _File = new FileInfo(path);
+            _File = fileInfo;
+
             new FFProbe().ParseVideoInfo(this);
         }
+
+        public VideoInfo(string path) : this(new FileInfo(path)) { }
 
         public override string ToString()
         {
@@ -53,5 +57,14 @@ namespace FFMpegSharp
             _File.Delete();
         }
 
+        public static VideoInfo FromFileInfo(FileInfo fileInfo)
+        {
+            return new VideoInfo(fileInfo.FullName);
+        }
+
+        public static VideoInfo FromPath(string path)
+        {
+            return new VideoInfo(path);
+        }
     }
 }

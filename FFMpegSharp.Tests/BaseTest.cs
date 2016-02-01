@@ -12,7 +12,7 @@ namespace FFMpegSharp.Tests
         public BaseTest()
         {
             Encoder = new FFMpeg();
-            Input = new FileInfo(VideoLibrary.LocalVideo);
+            Input = VideoLibrary.LocalVideo;
         }
     }
 }

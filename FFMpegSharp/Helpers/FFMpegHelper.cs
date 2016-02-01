@@ -22,25 +22,25 @@ namespace FFMpegSharp.Helpers
             return scale;
         }
 
-        public static void ConversionExceptionCheck(VideoInfo originalVideo, string convertedPath)
+        public static void ConversionExceptionCheck(VideoInfo originalVideo, FileInfo convertedPath)
         {
-            if (File.Exists(convertedPath))
+            if (File.Exists(convertedPath.FullName))
                 throw new Exception(string.Format("The output file: {1} already exists!", convertedPath));
 
             if (!File.Exists(originalVideo.Path))
                 throw new Exception(string.Format("Input {0} does not exist!", originalVideo.Path));
         }
 
-        public static void InputFilesExistExceptionCheck(params string[] paths)
+        public static void InputFilesExistExceptionCheck(params FileInfo[] paths)
         {
-            foreach(string path in paths)
-                if (!File.Exists(path))
+            foreach(FileInfo path in paths)
+                if (!File.Exists(path.FullName))
                     throw new Exception(string.Format("Input {0} does not exist!", path));
         }
 
-        public static void ExtensionExceptionCheck(string output, string expected)
+        public static void ExtensionExceptionCheck(FileInfo output, string expected)
         {
-            if (!expected.Equals(new FileInfo(output).Extension, StringComparison.OrdinalIgnoreCase))
+            if (!expected.Equals(new FileInfo(output.FullName).Extension, StringComparison.OrdinalIgnoreCase))
                 throw new Exception(string.Format("Invalid output file. File extension should be '{0}' required.", expected));
         }
 

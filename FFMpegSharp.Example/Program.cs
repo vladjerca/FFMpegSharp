@@ -1,6 +1,6 @@
 ﻿using FFMpegSharp.FFMPEG;
+//using FFMpegSharp.FFMPEG.Extend;
 using System;
-using System.Configuration;
 
 namespace FFMpegSharp.Example
 {
@@ -8,16 +8,16 @@ namespace FFMpegSharp.Example
     {
         static void Main(string[] args)
         {
-            string  inputFile = "<INPUT_LOCATION>",
-                    outputFile = "<OUTPUT_DIR>\\<OUTPUT_FILENAME>.<OUTPUT_EXTENSION>";
+            //string inputFile = "<INPUT_LOCATION>",
+            //        outputFile = "<OUTPUT_DIR>\\<OUTPUT_FILENAME>.<OUTPUT_EXTENSION>";
 
-            FFMpeg encoder = new FFMpeg();
+            //FFMpeg encoder = new FFMpeg();
 
-            // Bind Progress Handler
-            encoder.OnProgress += encoder_OnProgress;
+            //// Bind Progress Handler
+            //encoder.OnProgress += encoder_OnProgress;
 
-            // Start Encoding
-            encoder.ToMP4(inputFile, outputFile);
+            //// Start Encoding
+            //encoder.ToMP4(inputFile, outputFile);
         }
 
         static void encoder_OnProgress(int percentage)

@@ -11,28 +11,30 @@ namespace FFMpegSharp.Tests
 
         public bool Convert(VideoType type)
         {
-            string output = Input.OutputLocation(type);
+            var output = Input.OutputLocation(type);
+
+            VideoInfo input = VideoInfo.FromFileInfo(Input);
 
             try { 
                 switch (type)
                 {
                     case VideoType.MP4:
-                        Encoder.ToMP4(Input.FullName, output); break;
+                        Encoder.ToMP4(input, output); break;
                     case VideoType.OGV:
-                        Encoder.ToOGV(Input.FullName, output); break;
+                        Encoder.ToOGV(input, output); break;
                     case VideoType.TS:
-                        Encoder.ToTS(Input.FullName, output); break;
+                        Encoder.ToTS(input, output); break;
                     case VideoType.WebM:
-                        Encoder.ToWebM(Input.FullName, output); break;
+                        Encoder.ToWebM(input, output); break;
                 }
 
-                return File.Exists(output);
+                return File.Exists(output.FullName);
 
             }
             finally
             {
-                if (File.Exists(output))
-                    File.Delete(output);
+                if (File.Exists(output.FullName))
+                    File.Delete(output.FullName);
             }
         }
 
@@ -63,17 +65,17 @@ namespace FFMpegSharp.Tests
         [TestMethod]
         public void Thumbnail_Extract()
         {
-            string output = Input.OutputLocation(ImageType.PNG);
+            var output = Input.OutputLocation(ImageType.PNG);
             try
             {
-                Encoder.SaveThumbnail(Input.FullName, output);
+                Encoder.SaveThumbnail(VideoInfo.FromFileInfo(Input), output);
 
-                Assert.IsTrue(File.Exists(output));
+                Assert.IsTrue(File.Exists(output.FullName));
             }
             finally
             {
-                if (File.Exists(output))
-                    File.Delete(output);
+                if (File.Exists(output.FullName))
+                    File.Delete(output.FullName);
             }            
         }
     }

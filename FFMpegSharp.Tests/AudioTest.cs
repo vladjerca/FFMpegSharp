@@ -10,62 +10,67 @@ namespace FFMpegSharp.Tests
         [TestMethod]
         public void Audio_Remove()
         {
-            string output = Input.OutputLocation(VideoType.MP4);
+            var output = Input.OutputLocation(VideoType.MP4);
 
             try
             {
-                Encoder.Mute(Input.FullName, output);
-                Assert.IsTrue(File.Exists(output));
+                Encoder.Mute(VideoInfo.FromFileInfo(Input), output);
+                Assert.IsTrue(File.Exists(output.FullName));
             }
             finally
             {
-                if (File.Exists(output))
-                    File.Delete(output);
+                if (File.Exists(output.FullName))
+                    output.Delete();
             }
         }
 
         [TestMethod]
         public void Audio_Save()
         {
-            string output = Input.OutputLocation(AudioType.MP3);
-            if (File.Exists(output))
-                File.Delete(output);
+            var output = Input.OutputLocation(AudioType.MP3);
 
-            Encoder.SaveAudio(Input.FullName, output);
+            try {
+                Encoder.SaveAudio(VideoInfo.FromFileInfo(Input), output);
 
-            Assert.IsTrue(File.Exists(output));
+                Assert.IsTrue(File.Exists(output.FullName));
+            }
+            finally
+            {
+                if (File.Exists(output.FullName))
+                    output.Delete();
+            }
         }
 
         [TestMethod]
         public void Audio_Add()
         {
-            string output = Input.OutputLocation(VideoType.MP4);
+            var output = Input.OutputLocation(VideoType.MP4);
             try { 
-                Encoder.AddAudio(VideoLibrary.LocalVideoNoAudio, VideoLibrary.LocalAudio, output);
+                Encoder.AddAudio(VideoInfo.FromFileInfo(VideoLibrary.LocalVideoNoAudio), VideoLibrary.LocalAudio, output);
 
-                Assert.IsTrue(File.Exists(output));
+                Assert.IsTrue(File.Exists(output.FullName));
             }
             finally
             {
-                if (File.Exists(output))
-                    File.Delete(output);
+                if (File.Exists(output.FullName))
+                    output.Delete();
             }
         }
 
         [TestMethod]
         public void Audio_AddPoster()
         {
-            string output = Input.OutputLocation(VideoType.MP4);
+            var output = Input.OutputLocation(VideoType.MP4);
 
             try
             {
                 Encoder.AddPosterToAudio(VideoLibrary.LocalCover, VideoLibrary.LocalAudio, output);
-                Assert.IsTrue(File.Exists(output));
+                Assert.IsTrue(File.Exists(output.FullName));
             }
             finally
             {
-                if (File.Exists(output))
-                    File.Delete(output);
+                if (File.Exists(output.FullName))
+                    output.Delete();
             }
         }
     }
