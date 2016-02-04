@@ -1,4 +1,5 @@
-﻿using FFMpegSharp.FFMPEG.Enums;
+﻿using FFMpegSharp.FFMPEG.Atomic;
+using FFMpegSharp.FFMPEG.Enums;
 using System;
 using System.IO;
 
@@ -6,20 +7,19 @@ namespace FFMpegSharp.Helpers
 {
     public static class FFMpegHelper
     {
+        public static class Extensions
+        {
+            public readonly static string MP4 = ".mp4";
+            public readonly static string MP3 = ".mp3";
+            public readonly static string TS = ".ts";
+            public readonly static string WebM = ".webm";
+            public readonly static string OGV = ".webm";
+            public readonly static string PNG = ".png";
+        }
+
         public static string GetScale(VideoSize size)
         {
-            string scale = "-vf scale=";
-
-            switch (size)
-            {
-                case VideoSize.FullHD: scale += "-1:1080"; break;
-                case VideoSize.HD: scale += "-1:720"; break;
-                case VideoSize.ED: scale += "-1:480"; break;
-                case VideoSize.LD: scale += "-1:360"; break;
-                default: scale = ""; break;
-            }
-
-            return scale;
+            return Arguments.Scale(size);
         }
 
         public static void ConversionExceptionCheck(VideoInfo originalVideo, FileInfo convertedPath)

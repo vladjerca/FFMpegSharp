@@ -1,7 +1,7 @@
-﻿using FFMpegSharp.FFMPEG.Enums;
+﻿using FFMpegSharp.FFMPEG.Atomic;
+using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.Helpers;
 using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -105,27 +105,44 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="source">Source video file.</param>
         /// <param name="output">Output video file</param>
         /// <param name="captureTime">Seek position where the thumbnail should be taken.</param>
-        /// <param name="thumbWidth">Thumbnail width.</param>
-        /// <param name="thumbHeight">Thumbnail height.</param>
+        /// <param name="size">Thumbnail size. If width or height equal 0, the other will be computed automatically.</param>
         /// <returns>Success state.</returns>
         public bool SaveThumbnail(VideoInfo source, FileInfo output, Size? size = null, TimeSpan? captureTime = null)
         {
             if (captureTime == null)
                 captureTime = TimeSpan.FromSeconds(source.Duration.TotalSeconds / 3);
 
-            if (size == null)
+            if (size == null || (size.Value.Height == 0 && size.Value.Width == 0))
+            {
                 size = new Size(source.Width, source.Height);
+            }
+            
+            if( size.Value.Width != size.Value.Height )
+            {
+                if (size.Value.Width == 0)
+                {
+                    double ratio = source.Width / (double)size.Value.Width;
+
+                    size = new Size((int)(source.Width * ratio), (int)(source.Height * ratio));
+                }
+
+                if(size.Value.Height == 0)
+                {
+                    double ratio = source.Height / (double)size.Value.Height;
+
+                    size = new Size((int)(source.Width * ratio), (int)(source.Height * ratio));
+                }
+            }    
 
             FFMpegHelper.ConversionExceptionCheck(source, output);
-            FFMpegHelper.ExtensionExceptionCheck(output, ".png");
+            FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.PNG);
 
-            string thumbArgs,
-                   thumbSize = string.Format("{0}x{1}", source.Width, source.Height);
-
-            thumbArgs = String.Format("-i \"{0}\" -vcodec png -vframes 1 -ss {1} -s {2} \"{3}\"", source.Path,
-                                                                                                  captureTime,
-                                                                                                  thumbSize,
-                                                                                                  output);
+            string thumbArgs = Arguments.Input(source) +
+                               Arguments.Video(VideoCodec.PNG) + 
+                               Arguments.FrameOutputCount(1) +
+                               Arguments.Seek(captureTime) +
+                               Arguments.Size(size) +
+                               Arguments.Output(output);
 
             return RunProcess(thumbArgs, output);
         }
@@ -143,19 +160,16 @@ namespace FFMpegSharp.FFMPEG
         {
             totalTime = source.Duration;
 
-            string threadCount = multithread ? 
-                                Environment.ProcessorCount.ToString() : "1",
-                                scale = FFMpegHelper.GetScale(size);
-
             FFMpegHelper.ConversionExceptionCheck(source, output);
-            FFMpegHelper.ExtensionExceptionCheck(output, ".mp4");
+            FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.MP4);
 
-            string conversionArgs = string.Format("-i \"{0}\" -threads {1} {2} -b:v 2000k -vcodec libx264 -preset {3} -g 30 -codec:a aac -b:a {4}k -strict experimental \"{5}\"", source.Path,
-                                                                                                                                                                                  threadCount,
-                                                                                                                                                                                  scale,
-                                                                                                                                                                                  speed.ToString().ToLower(),
-                                                                                                                                                                                  (int)aQuality,
-                                                                                                                                                                                  output);
+            string conversionArgs = Arguments.Input(source) +
+                                    Arguments.Threads(multithread) +
+                                    Arguments.Scale(size) +
+                                    Arguments.Video(VideoCodec.LibX264, 2400) +
+                                    Arguments.Speed(speed) +
+                                    Arguments.Audio(AudioCodec.AAC, aQuality) +
+                                    Arguments.Output(output);
 
             return RunProcess(conversionArgs, output);
         }
@@ -172,18 +186,16 @@ namespace FFMpegSharp.FFMPEG
         {
             totalTime = source.Duration;
 
-            string threadCount = multithread ? 
-                                 Environment.ProcessorCount.ToString() : "1",
-                   scale = FFMpegHelper.GetScale(size);
-
             FFMpegHelper.ConversionExceptionCheck(source, output);
-            FFMpegHelper.ExtensionExceptionCheck(output, ".webm");
+            FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.WebM);
 
-            string conversionArgs = string.Format("-i \"{0}\" -threads {1} {2} -vcodec libvpx -quality good -cpu-used 16 -deadline realtime -b:v 2000k -qmin 10 -qmax 42 -maxrate 500k -bufsize 1000k -codec:a libvorbis -b:a {3}k \"{4}\"", source.Path,
-                                                                                                                                                                                                                         threadCount,
-                                                                                                                                                                                                                         scale,
-                                                                                                                                                                                                                         (int)aQuality,
-                                                                                                                                                                                                                         output);
+            string conversionArgs = Arguments.Input(source) +
+                                    Arguments.Threads(multithread) +
+                                    Arguments.Scale(size) +
+                                    Arguments.Video(VideoCodec.LibVPX, 2400) +
+                                    Arguments.Speed(16) +
+                                    Arguments.Audio(AudioCodec.LibVorbis, aQuality) +
+                                    Arguments.Output(output);
 
             return RunProcess(conversionArgs, output);
         }
@@ -205,13 +217,16 @@ namespace FFMpegSharp.FFMPEG
                    scale = FFMpegHelper.GetScale(size);
 
             FFMpegHelper.ConversionExceptionCheck(source, output);
-            FFMpegHelper.ExtensionExceptionCheck(output, ".ogv");
+            FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.OGV);
 
-            string conversionArgs = string.Format("-i \"{0}\" -threads {1} {2} -codec:v libtheora -qscale:v 7 -cpu-used 16 -deadline realtime -codec:a libvorbis -codec:a libvorbis -b:a {3}k -qscale:a 5 \"{4}\"", source.Path,
-                                                                                                                                                       threadCount,
-                                                                                                                                                       scale,
-                                                                                                                                                       (int)aQuality,
-                                                                                                                                                       output);
+            string conversionArgs = Arguments.Input(source) +
+                                    Arguments.Threads(multithread) +
+                                    Arguments.Scale(size) +
+                                    Arguments.Video(VideoCodec.LibTheora, 2400) +
+                                    Arguments.Speed(16) +
+                                    Arguments.Audio(AudioCodec.LibVorbis, aQuality) +
+                                    Arguments.Output(output);
+
             return RunProcess(conversionArgs, output);
         }
 
@@ -226,9 +241,14 @@ namespace FFMpegSharp.FFMPEG
             totalTime = source.Duration;
 
             FFMpegHelper.ConversionExceptionCheck(source, output);
-            FFMpegHelper.ExtensionExceptionCheck(output, ".ts");
+            FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.TS);
 
-            string conversionArgs = string.Format("-i \"{0}\" -c copy -bsf:v h264_mp4toannexb -f mpegts \"{1}\"", source.Path, output);
+            string conversionArgs = Arguments.Input(source) +
+                                    Arguments.Copy() +
+                                    Arguments.BitStreamFilter(Filter.H264_MP4ToAnnexB) +
+                                    Arguments.ForceFormat(VideoCodec.MpegTS) +
+                                    Arguments.Output(output);
+
             return RunProcess(conversionArgs, output);
         }
 
@@ -242,9 +262,15 @@ namespace FFMpegSharp.FFMPEG
         public bool AddPosterToAudio(FileInfo image, FileInfo audio, FileInfo output)
         {
             FFMpegHelper.InputFilesExistExceptionCheck(image, audio);
-            FFMpegHelper.ExtensionExceptionCheck(output, ".mp4");
+            FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.MP4);
 
-            string args = string.Format("-loop 1 -i \"{0}\" -i \"{1}\" -b:v 2000k -vcodec libx264 -c:a aac -strict experimental -shortest \"{2}\"", image, audio, output);
+            string args = Arguments.Loop(1) +
+                          Arguments.Input(image) +
+                          Arguments.Input(audio) +
+                          Arguments.Video(VideoCodec.LibX264, 2400) +
+                          Arguments.Audio(AudioCodec.AAC, AudioQuality.Normal) +
+                          Arguments.FinalizeAtShortestInput() +
+                          Arguments.Output(output);
 
             return RunProcess(args, output);
         }
@@ -258,13 +284,18 @@ namespace FFMpegSharp.FFMPEG
         public bool Join(FileInfo output, params VideoInfo[] videos)
         {
             string[] pathList = new string[videos.Length];
+
             for (int i = 0; i < pathList.Length; i++)
             {
-                pathList[i] = videos[i].Path.Replace(videos[i].Extension, ".ts");
-                ToTS(videos[i], new FileInfo(videos[i].Path.Replace("mp4", "ts")));
+                pathList[i] = videos[i].Path.Replace(videos[i].Extension, FFMpegHelper.Extensions.TS);
+                ToTS(videos[i], new FileInfo(videos[i].Path.Replace(FFMpegHelper.Extensions.MP4, FFMpegHelper.Extensions.TS)));
             }
 
-            string conversionArgs = string.Format("-i \"concat:{0}\" -c copy -bsf:a aac_adtstoasc \"{1}\"", string.Join(@"|", (object[])pathList), output);
+            string conversionArgs = Arguments.InputConcat(pathList) +
+                                    Arguments.Copy() +
+                                    Arguments.BitStreamFilter(Filter.AAC_ADTSToASC) +
+                                    Arguments.Output(output);
+
             bool result = RunProcess(conversionArgs, output);
 
             if (result)
@@ -283,11 +314,13 @@ namespace FFMpegSharp.FFMPEG
         /// <returns>Success state.</returns>
         public bool SaveM3U8Stream(Uri uri, FileInfo output)
         {
-            FFMpegHelper.ExtensionExceptionCheck(output, ".mp4");
+            FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.MP4);
 
             if (uri.Scheme == "http" || uri.Scheme == "https")
             {
-                string conversionArgs = string.Format("-i \"{0}\" \"{1}\"", uri.AbsoluteUri, output);
+                string conversionArgs = Arguments.Input(uri) +
+                                        Arguments.Output(output);
+
                 return RunProcess(conversionArgs, output);
             }
             else throw new ArgumentException("Uri: {0}, does not point to a valid http(s) stream.", uri.AbsoluteUri);
@@ -304,7 +337,10 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.ExtensionExceptionCheck(output, source.Extension);
 
-            string args = string.Format("-i \"{0}\" -c copy -an \"{1}\"", source.Path, output);
+            string args = Arguments.Input(source) +
+                          Arguments.Copy() +
+                          Arguments.Disable(Channel.Audio) +
+                          Arguments.Output(output);
 
             return RunProcess(args, output);
         }
@@ -318,9 +354,11 @@ namespace FFMpegSharp.FFMPEG
         public bool SaveAudio(VideoInfo source, FileInfo output)
         {
             FFMpegHelper.ConversionExceptionCheck(source, output);
-            FFMpegHelper.ExtensionExceptionCheck(output, ".mp3");
+            FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.MP3);
 
-            string args = string.Format("-i \"{0}\" -vn -ab 256 \"{1}\"", source.Path, output);
+            string args = Arguments.Input(source) +
+                          Arguments.Disable(Channel.Video) +
+                          Arguments.Output(output);
 
             return RunProcess(args, output);
         }
@@ -339,7 +377,12 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.InputFilesExistExceptionCheck(audio);
             FFMpegHelper.ExtensionExceptionCheck(output, source.Extension);
 
-            string args = string.Format("-i \"{0}\" -i \"{1}\" -c:v copy -c:a aac -strict experimental {3} \"{2}\"", source.Path, audio, output, stopAtShortest ? "-shortest" : "");
+            string args = Arguments.Input(source) +
+                          Arguments.Input(audio) +
+                          Arguments.Copy(Channel.Video) +
+                          Arguments.Audio(AudioCodec.AAC, AudioQuality.HD) +
+                          Arguments.FinalizeAtShortestInput() +
+                          Arguments.Output(output);
 
             return RunProcess(args, output);
         }
