@@ -57,11 +57,11 @@ namespace FFMpegSharp.FFMPEG
         /// <summary>
         /// Probes the targeted video file and retrieves all available details.
         /// </summary>
-        /// <param name="source">Source video file.</param>
+        /// <param name="info">Source video file.</param>
         /// <returns>A video info object containing all details necessary.</returns>
-        public VideoInfo ParseVideoInfo(VideoInfo source)
+        public VideoInfo ParseVideoInfo(VideoInfo info)
         {
-            string jsonOutput = RunProcess(string.Format("-v quiet -print_format json -show_streams {0}", source.Path));
+            string jsonOutput = RunProcess(string.Format("-v quiet -print_format json -show_streams {0}", info.Path));
 
             Dictionary<string, dynamic> dict =
                 (new JavaScriptSerializer()).Deserialize<Dictionary<string, dynamic>>(jsonOutput);
@@ -69,43 +69,56 @@ namespace FFMpegSharp.FFMPEG
                 aud = 1 - vid;
 
             // Get video duration
-            double numberData;
-            numberData = double.Parse(dict["streams"][vid]["duration"]);
-            source.Duration = TimeSpan.FromSeconds(numberData);
-            source.Duration = source.Duration.Subtract(TimeSpan.FromMilliseconds(source.Duration.Milliseconds));
+            double numberData = 0;
+            try
+            {
+                numberData = double.Parse(dict["streams"][vid]["duration"]);
+                info.Duration = TimeSpan.FromSeconds(numberData);
+                info.Duration = info.Duration.Subtract(TimeSpan.FromMilliseconds(info.Duration.Milliseconds));
+            }
+            catch (Exception) { info.Duration = TimeSpan.MinValue;  }
+            
+            
 
             // Get video size in megabytes
-            double videoSize = double.Parse(dict["streams"][vid]["bit_rate"]) * numberData / 8388608,
+            double videoSize = 0,
                     audioSize = 0;
+
+            try
+            {
+                info.VideoFormat = dict["streams"][vid]["codec_name"];
+                videoSize = double.Parse(dict["streams"][vid]["bit_rate"]) * numberData / 8388608;
+            }
+            catch(Exception) { info.VideoFormat = "none"; }
 
             // Get audio format - wrap for exceptions if the video has no audio
             try
             {
-                source.AudioFormat = dict["streams"][aud]["codec_name"];
+                info.AudioFormat = dict["streams"][aud]["codec_name"];
                 audioSize = double.Parse(dict["streams"][aud]["bit_rate"]) * double.Parse(dict["streams"][aud]["duration"]) / 8388608;
             }
-            catch (Exception) { source.AudioFormat = "none"; }
+            catch (Exception) { info.AudioFormat = "none"; }
 
             // Get video format
-            source.VideoFormat = dict["streams"][vid]["codec_name"];
+            
 
             // Get video width
-            source.Width = dict["streams"][vid]["width"];
+            info.Width = dict["streams"][vid]["width"];
 
             // Get video height
-            source.Height = dict["streams"][vid]["height"];
+            info.Height = dict["streams"][vid]["height"];
 
-            source.Size = Math.Round(videoSize + audioSize, 2);
+            info.Size = Math.Round(videoSize + audioSize, 2);
 
             // Get video aspect ratio
-            int cd = FFProbeHelper.GCD(source.Width, source.Height);
-            source.Ratio = source.Width / cd + ":" + source.Height / cd;
+            int cd = FFProbeHelper.GCD(info.Width, info.Height);
+            info.Ratio = info.Width / cd + ":" + info.Height / cd;
 
             // Get video framerate
             string[] fr = ((string)dict["streams"][vid]["r_frame_rate"]).Split('/');
-            source.FrameRate = Math.Round(double.Parse(fr[0]) / double.Parse(fr[1]), 3);
+            info.FrameRate = Math.Round(double.Parse(fr[0]) / double.Parse(fr[1]), 3);
 
-            return source;
+            return info;
         }
     }
 }

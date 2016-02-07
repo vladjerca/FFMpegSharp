@@ -13,7 +13,7 @@ namespace FFMpegSharp.Helpers
             public readonly static string MP3 = ".mp3";
             public readonly static string TS = ".ts";
             public readonly static string WebM = ".webm";
-            public readonly static string OGV = ".webm";
+            public readonly static string OGV = ".ogv";
             public readonly static string PNG = ".png";
         }
 

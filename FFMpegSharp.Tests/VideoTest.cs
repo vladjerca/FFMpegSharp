@@ -1,4 +1,6 @@
-﻿using FFMpegSharp.Tests.Resources;
+﻿using FFMpegSharp.Enums;
+using FFMpegSharp.FFMPEG.Enums;
+using FFMpegSharp.Tests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 
@@ -13,23 +15,18 @@ namespace FFMpegSharp.Tests
         {
             var output = Input.OutputLocation(type);
 
-            VideoInfo input = VideoInfo.FromFileInfo(Input);
+            try
+            {              
+                VideoInfo input = VideoInfo.FromFileInfo(Input);
 
-            try { 
-                switch (type)
-                {
-                    case VideoType.MP4:
-                        Encoder.ToMP4(input, output); break;
-                    case VideoType.OGV:
-                        Encoder.ToOGV(input, output); break;
-                    case VideoType.TS:
-                        Encoder.ToTS(input, output); break;
-                    case VideoType.WebM:
-                        Encoder.ToWebM(input, output); break;
-                }
+                input.ConvertTo(type, output, Speed.SuperFast, VideoSize.Original, AudioQuality.Ultra, true);
 
-                return File.Exists(output.FullName);
+                var duration1 = new VideoInfo(output.FullName).Duration;
+                var duration2 = input.Duration;
 
+                var outputVideo = new VideoInfo(output.FullName);
+
+                return File.Exists(output.FullName) && (outputVideo.Duration == input.Duration || (outputVideo.Width == input.Width && outputVideo.Height == input.Height) );
             }
             finally
             {
@@ -39,38 +36,42 @@ namespace FFMpegSharp.Tests
         }
 
         [TestMethod]
-        public void Convert_ToMP4()
+        public void Video_ToMP4()
         {
             Assert.IsTrue(Convert(VideoType.MP4));
         }
 
         [TestMethod]
-        public void Convert_ToTS()
+        public void Video_ToTS()
         {
             Assert.IsTrue(Convert(VideoType.TS));
         }
 
         [TestMethod]
-        public void Convert_ToWEBM()
+        public void Video_ToWEBM()
         {
             Assert.IsTrue(Convert(VideoType.WebM));
         }
 
         [TestMethod]
-        public void Convert_ToOGV()
+        public void Video_ToOGV()
         {
-            Assert.IsTrue(Convert(VideoType.WebM));
+            Assert.IsTrue(Convert(VideoType.OGV));
         }
 
         [TestMethod]
-        public void Thumbnail_Extract()
+        public void Video_Snapshot()
         {
             var output = Input.OutputLocation(ImageType.PNG);
+
             try
             {
-                Encoder.SaveThumbnail(VideoInfo.FromFileInfo(Input), output);
+                var input = VideoInfo.FromFileInfo(Input);
 
-                Assert.IsTrue(File.Exists(output.FullName));
+                using (var result = input.Snapshot(output))
+                {
+                    Assert.IsTrue(File.Exists(output.FullName));
+                }
             }
             finally
             {

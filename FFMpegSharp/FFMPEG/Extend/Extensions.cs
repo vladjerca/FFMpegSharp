@@ -1,11 +1,7 @@
 ﻿using FFMpegSharp.FFMPEG.Enums;
-using FFMpegSharp.Helpers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Extend
 {
@@ -65,7 +61,6 @@ namespace FFMpegSharp.FFMPEG.Extend
             return encoder.ToTS(VideoInfo.FromPath(source), new FileInfo(output));
         }
 
-
         /// <summary>
         /// Strips a video file of audio.
         /// </summary>
@@ -83,9 +78,9 @@ namespace FFMpegSharp.FFMPEG.Extend
         /// <param name="source">Source video file.</param>
         /// <param name="output">Output audio file.</param>
         /// <returns>Success state.</returns>
-        public static bool SaveAudio(this FFMpeg encoder, string source, string output)
+        public static bool ExtractAudio(this FFMpeg encoder, string source, string output)
         {
-            return encoder.SaveAudio(VideoInfo.FromPath(source), new FileInfo(output));
+            return encoder.ExtractAudio(VideoInfo.FromPath(source), new FileInfo(output));
         }
 
         /// <summary>
@@ -96,9 +91,9 @@ namespace FFMpegSharp.FFMPEG.Extend
         /// <param name="output">Output video file.</param>
         /// <param name="stopAtShortest">Indicates if the encoding should stop at the shortest input file.</param>
         /// <returns>Success state</returns>
-        public static bool AddAudio(this FFMpeg encoder, string source, string audio, string output, bool stopAtShortest = false)
+        public static bool ReplaceAudio(this FFMpeg encoder, string source, string audio, string output, bool stopAtShortest = false)
         {
-            return encoder.AddAudio(VideoInfo.FromPath(source), new FileInfo(audio), new FileInfo(output));
+            return encoder.ReplaceAudio(VideoInfo.FromPath(source), new FileInfo(audio), new FileInfo(output));
         }
 
         /// <summary>

@@ -1,5 +1,8 @@
-﻿using FFMpegSharp.Tests.Resources;
+﻿using FFMpegSharp.Enums;
+using FFMpegSharp.Extend;
+using FFMpegSharp.Tests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Drawing;
 using System.IO;
 
 namespace FFMpegSharp.Tests
@@ -14,7 +17,8 @@ namespace FFMpegSharp.Tests
 
             try
             {
-                Encoder.Mute(VideoInfo.FromFileInfo(Input), output);
+                VideoInfo.FromFileInfo(Input).Mute(output);
+
                 Assert.IsTrue(File.Exists(output.FullName));
             }
             finally
@@ -29,8 +33,9 @@ namespace FFMpegSharp.Tests
         {
             var output = Input.OutputLocation(AudioType.MP3);
 
-            try {
-                Encoder.SaveAudio(VideoInfo.FromFileInfo(Input), output);
+            try
+            { 
+                VideoInfo.FromFileInfo(Input).ExtractAudio(output);
 
                 Assert.IsTrue(File.Exists(output.FullName));
             }
@@ -45,9 +50,12 @@ namespace FFMpegSharp.Tests
         public void Audio_Add()
         {
             var output = Input.OutputLocation(VideoType.MP4);
-            try { 
-                Encoder.AddAudio(VideoInfo.FromFileInfo(VideoLibrary.LocalVideoNoAudio), VideoLibrary.LocalAudio, output);
+            try
+            {
+                var input = VideoInfo.FromFileInfo(VideoLibrary.LocalVideoNoAudio);
+                input.ReplaceAudio(VideoLibrary.LocalAudio, output);
 
+                Assert.AreEqual(input.Duration, VideoInfo.FromFileInfo(output).Duration);
                 Assert.IsTrue(File.Exists(output.FullName));
             }
             finally
@@ -58,14 +66,15 @@ namespace FFMpegSharp.Tests
         }
 
         [TestMethod]
-        public void Audio_AddPoster()
+        public void Image_AddAudio()
         {
             var output = Input.OutputLocation(VideoType.MP4);
 
             try
             {
-                Encoder.AddPosterToAudio(VideoLibrary.LocalCover, VideoLibrary.LocalAudio, output);
-                Assert.IsTrue(File.Exists(output.FullName));
+                var result = new Bitmap(VideoLibrary.LocalCover.FullName).AddAudio(VideoLibrary.LocalAudio, output);
+
+                Assert.IsTrue(result.Exists);
             }
             finally
             {

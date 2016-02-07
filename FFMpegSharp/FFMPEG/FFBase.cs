@@ -16,6 +16,9 @@ namespace FFMpegSharp.FFMPEG
 
         protected void RunProcess(string args, string processPath, bool rStandardInput = false, bool rStandardOutput = false, bool rStandardError = false)
         {
+            if (IsWorking)
+                throw new InvalidOperationException("The current FFMpeg process is busy with another operation. Create a new object for parallel executions.");
+
             process = new Process();
 
             process.StartInfo.FileName = processPath;

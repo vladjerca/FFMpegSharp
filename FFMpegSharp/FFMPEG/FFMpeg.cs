@@ -107,7 +107,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="captureTime">Seek position where the thumbnail should be taken.</param>
         /// <param name="size">Thumbnail size. If width or height equal 0, the other will be computed automatically.</param>
         /// <returns>Success state.</returns>
-        public bool SaveThumbnail(VideoInfo source, FileInfo output, Size? size = null, TimeSpan? captureTime = null)
+        public bool Snapshot(VideoInfo source, FileInfo output, Size? size = null, TimeSpan? captureTime = null)
         {
             if (captureTime == null)
                 captureTime = TimeSpan.FromSeconds(source.Duration.TotalSeconds / 3);
@@ -212,9 +212,8 @@ namespace FFMpegSharp.FFMPEG
         {
             totalTime = source.Duration;
 
-            string threadCount = multithread ? 
-                                 Environment.ProcessorCount.ToString() : "1",
-                   scale = FFMpegHelper.GetScale(size);
+            string threadCount = multithread ?
+                                 Environment.ProcessorCount.ToString() : "1";
 
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.OGV);
@@ -259,7 +258,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="audio">Source audio file.</param>
         /// <param name="output">Output video file.</param>
         /// <returns></returns>
-        public bool AddPosterToAudio(FileInfo image, FileInfo audio, FileInfo output)
+        public bool PosterWithAudio(FileInfo image, FileInfo audio, FileInfo output)
         {
             FFMpegHelper.InputFilesExistExceptionCheck(image, audio);
             FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.MP4);
@@ -351,7 +350,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="source">Source video file.</param>
         /// <param name="output">Output audio file.</param>
         /// <returns>Success state.</returns>
-        public bool SaveAudio(VideoInfo source, FileInfo output)
+        public bool ExtractAudio(VideoInfo source, FileInfo output)
         {
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.MP3);
@@ -371,7 +370,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="output">Output video file.</param>
         /// <param name="stopAtShortest">Indicates if the encoding should stop at the shortest input file.</param>
         /// <returns>Success state</returns>
-        public bool AddAudio(VideoInfo source, FileInfo audio, FileInfo output, bool stopAtShortest = false)
+        public bool ReplaceAudio(VideoInfo source, FileInfo audio, FileInfo output, bool stopAtShortest = false)
         {
             FFMpegHelper.ConversionExceptionCheck(source, output);
             FFMpegHelper.InputFilesExistExceptionCheck(audio);

@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using FFMpegSharp.Enums;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FFMpegSharp.Tests.Resources
 {
-    public enum VideoType
-    {
-        MP4,
-        TS,
-        WebM,
-        OGV
-    }
-
     public enum AudioType
     {
         MP3
