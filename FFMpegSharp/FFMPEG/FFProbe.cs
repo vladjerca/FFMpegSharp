@@ -61,7 +61,7 @@ namespace FFMpegSharp.FFMPEG
         /// <returns>A video info object containing all details necessary.</returns>
         public VideoInfo ParseVideoInfo(VideoInfo info)
         {
-            string jsonOutput = RunProcess(string.Format("-v quiet -print_format json -show_streams {0}", info.Path));
+            string jsonOutput = RunProcess(string.Format("-v quiet -print_format json -show_streams \"{0}\"", info.Path));
 
             Dictionary<string, dynamic> dict =
                 (new JavaScriptSerializer()).Deserialize<Dictionary<string, dynamic>>(jsonOutput);
