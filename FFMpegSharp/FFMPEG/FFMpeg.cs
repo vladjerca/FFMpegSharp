@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace FFMpegSharp.FFMPEG
 {
-    public delegate void ConversionHandler(int percentage);
+    public delegate void ConversionHandler(double percentage);
 
     public class FFMpeg : FFBase, IDisposable
     {
@@ -74,23 +74,22 @@ namespace FFMpegSharp.FFMPEG
                     if (m.Success)
                     {
                         TimeSpan t = TimeSpan.Parse(m.Value);
-                        int percentage = (int)(t.TotalSeconds / totalTime.TotalSeconds * 100);
+                        double percentage = Math.Round((t.TotalSeconds / totalTime.TotalSeconds * 100), 2);
                         OnProgress(percentage);
                     }
                 }
             }
         }
         #endregion
-   
-        /// <summary>
-        /// Passes the conversion percentage when encoding.
+
+        //// <summary>
+        /// Returns the percentage of the current conversion progress.
         /// </summary>
         public event ConversionHandler OnProgress;
 
         /// <summary>
         /// Intializes the FFMPEG encoder.
         /// </summary>
-        /// <param name="rootPath">Directory root where ffmpeg.exe can be found. If not specified, root will be loaded from config.</param>
         public FFMpeg()
         {
             FFMpegHelper.RootExceptionCheck(configuredRoot);
@@ -111,6 +110,9 @@ namespace FFMpegSharp.FFMPEG
         {
             if (captureTime == null)
                 captureTime = TimeSpan.FromSeconds(source.Duration.TotalSeconds / 3);
+
+            if (output.Extension.ToLower() != FFMpegHelper.Extensions.PNG)
+                output = new FileInfo(output.FullName.Replace(output.Extension, FFMpegHelper.Extensions.PNG));
 
             if (size == null || (size.Value.Height == 0 && size.Value.Width == 0))
             {
@@ -135,7 +137,6 @@ namespace FFMpegSharp.FFMPEG
             }    
 
             FFMpegHelper.ConversionExceptionCheck(source, output);
-            FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.PNG);
 
             string thumbArgs = Arguments.Input(source) +
                                Arguments.Video(VideoCodec.PNG) + 
@@ -154,6 +155,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="output">Output video file.</param>
         /// <param name="speed">Conversion speed preset.</param>
         /// <param name="size">Output video size.</param>
+        /// <param name="aQuality">Output audio quality.</param>
         /// <param name="multithread">Use multithreading for conversion.</param>
         /// <returns>Success state.</returns>
         public bool ToMP4(VideoInfo source, FileInfo output, Speed speed = Speed.SuperFast, VideoSize size = VideoSize.Original, AudioQuality aQuality = AudioQuality.Normal, bool multithread = false)
@@ -180,6 +182,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="source">Source video file.</param>
         /// <param name="output">Output video file.</param>
         /// <param name="size">Output video size.</param>
+        /// <param name="aQuality">Output audio quality.</param>
         /// <param name="multithread">Use multithreading for conversion.</param>
         /// <returns>Success state.</returns>
         public bool ToWebM(VideoInfo source, FileInfo output, VideoSize size = VideoSize.Original, AudioQuality aQuality = AudioQuality.Normal, bool multithread = false)
@@ -206,6 +209,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="source">Source video file.</param>
         /// <param name="output">Output video file.</param>
         /// <param name="size">Output video size.</param>
+        /// <param name="aQuality">Output audio quality.</param>
         /// <param name="multithread">Use multithreading for conversion.</param>
         /// <returns>Success state.</returns>
         public bool ToOGV(VideoInfo source, FileInfo output, VideoSize size = VideoSize.Original, AudioQuality aQuality = AudioQuality.Normal, bool multithread = false)
@@ -286,8 +290,8 @@ namespace FFMpegSharp.FFMPEG
 
             for (int i = 0; i < pathList.Length; i++)
             {
-                pathList[i] = videos[i].Path.Replace(videos[i].Extension, FFMpegHelper.Extensions.TS);
-                ToTS(videos[i], new FileInfo(videos[i].Path.Replace(FFMpegHelper.Extensions.MP4, FFMpegHelper.Extensions.TS)));
+                pathList[i] = videos[i].FullPath.Replace(videos[i].Extension, FFMpegHelper.Extensions.TS);
+                ToTS(videos[i], new FileInfo(videos[i].FullPath.Replace(FFMpegHelper.Extensions.MP4, FFMpegHelper.Extensions.TS)));
             }
 
             string conversionArgs = Arguments.InputConcat(pathList) +

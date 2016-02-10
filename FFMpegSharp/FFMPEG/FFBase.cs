@@ -12,6 +12,9 @@ namespace FFMpegSharp.FFMPEG
         public FFBase()
         {
             configuredRoot = ConfigurationManager.AppSettings["ffmpegRoot"];
+
+            if (configuredRoot.EndsWith("\\"))
+                configuredRoot = configuredRoot.Substring(0, configuredRoot.Length - 1);
         }
 
         protected void RunProcess(string args, string processPath, bool rStandardInput = false, bool rStandardOutput = false, bool rStandardError = false)
@@ -20,7 +23,7 @@ namespace FFMpegSharp.FFMPEG
                 throw new InvalidOperationException("The current FFMpeg process is busy with another operation. Create a new object for parallel executions.");
 
             process = new Process();
-
+            IsKillFaulty = false;
             process.StartInfo.FileName = processPath;
             process.StartInfo.Arguments = args;
             process.StartInfo.UseShellExecute = false;
@@ -32,18 +35,29 @@ namespace FFMpegSharp.FFMPEG
         }
 
         /// <summary>
-        /// Returns true if the killing the associated process throws an exception
+        /// Is 'true' when an exception is thrown during process kill (for paranoia level users).
         /// </summary>
         public bool IsKillFaulty { get; private set; }
 
         /// <summary>
-        /// Returns true if the associated process is till alive/running
+        /// Returns true if the associated process is still alive/running.
         /// </summary>
         public bool IsWorking
         {
             get
             {
-                return process != null && !process.HasExited && Process.GetProcessById(process.Id) != null;
+                bool processHasExited;
+
+                try
+                {
+                    processHasExited = process.HasExited;
+                }
+                catch
+                {
+                    processHasExited = true;
+                }
+
+                return process != null && !processHasExited && Process.GetProcessById(process.Id) != null;
             }
         }
 

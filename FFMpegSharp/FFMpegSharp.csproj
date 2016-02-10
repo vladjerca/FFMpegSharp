@@ -45,6 +45,7 @@
     <Compile Include="Enums\VideoType.cs" />
     <Compile Include="Extend\BitmapExtensions.cs" />
     <Compile Include="Extend\UriExtensions.cs" />
+    <Compile Include="VideoInfoExtend.cs" />
     <Compile Include="FFMPEG\Atomic\Arguments.cs" />
     <Compile Include="FFMPEG\Enums\AudioQuality.cs" />
     <Compile Include="FFMPEG\Enums\Codec.cs" />

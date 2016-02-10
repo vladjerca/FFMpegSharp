@@ -21,8 +21,9 @@ namespace FFMpegSharp.Helpers
             if (root == null)
                 throw new Exception("FFProbe root is not configured in app config. Missing key 'ffmpegRoot'.");
 
-            if (!File.Exists(root + "\\ffprobe.exe"))
-                throw new Exception("FFProbe cannot be found in the root directory!");
+            string path = root + "\\ffprobe.exe";
+            if (!File.Exists(path))
+                throw new Exception(string.Format("FFProbe cannot be found in the in {0}...", path));
         }
     }
 }
