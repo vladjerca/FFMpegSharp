@@ -123,7 +123,7 @@ namespace FFMpegSharp.FFMPEG.Extend
                     var vidInfo = new VideoInfo(videos[i]);
                     infoList[i] = vidInfo;
                 }
-                return encoder.Join(output, infoList);
+                return encoder.Join(new FileInfo(output), infoList);
             }
             return false;
         }
@@ -134,7 +134,7 @@ namespace FFMpegSharp.FFMPEG.Extend
         /// <param name="output">Output video file.</param>
         /// <param name="videos">List of vides that need to be joined together.</param>
         /// <returns>Success state.</returns>
-        public static bool Join(this FFMpeg encoder, string output, IEnumerable<VideoInfo> videos)
+        public static bool Join(this FFMpeg encoder, string output, IEnumerable<string> videos)
         {
             return encoder.Join(output, videos.ToArray());
         }

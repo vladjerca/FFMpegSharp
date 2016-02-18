@@ -335,7 +335,7 @@ namespace FFMpegSharp
 
             queuedVideos.Insert(0, this);
 
-            var success = FFmpeg.Join(output.FullName, queuedVideos);
+            var success = FFmpeg.Join(output, queuedVideos.ToArray());
 
             if (!success)
                 throw new OperationCanceledException("Could not join the videos.");
