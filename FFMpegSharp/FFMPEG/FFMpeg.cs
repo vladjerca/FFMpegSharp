@@ -248,7 +248,7 @@ namespace FFMpegSharp.FFMPEG
 
             string conversionArgs = Arguments.Input(source) +
                                     Arguments.Copy() +
-                                    Arguments.BitStreamFilter(Filter.H264_MP4ToAnnexB) +
+                                    Arguments.BitStreamFilter(Channel.Video, Filter.H264_MP4ToAnnexB) +
                                     Arguments.ForceFormat(VideoCodec.MpegTS) +
                                     Arguments.Output(output);
 
@@ -296,7 +296,7 @@ namespace FFMpegSharp.FFMPEG
 
             string conversionArgs = Arguments.InputConcat(pathList) +
                                     Arguments.Copy() +
-                                    Arguments.BitStreamFilter(Filter.AAC_ADTSToASC) +
+                                    Arguments.BitStreamFilter(Channel.Audio, Filter.AAC_ADTSToASC) +
                                     Arguments.Output(output);
 
             bool result = RunProcess(conversionArgs, output);

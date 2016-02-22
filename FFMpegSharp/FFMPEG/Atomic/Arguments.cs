@@ -90,9 +90,14 @@ namespace FFMpegSharp.FFMPEG.Atomic
             return string.Format("-f {0} ", codec.ToString().ToLower());
         }
         
-        internal static string BitStreamFilter(Filter filter)
+        internal static string BitStreamFilter(Channel type, Filter filter)
         {
-            return string.Format("-bsf:v {0} ", filter.ToString().ToLower());
+            switch (type)
+            {
+                case Channel.Audio: return string.Format("-bsf:a {0} ", filter.ToString().ToLower());
+                case Channel.Video: return string.Format("-bsf:v {0} ", filter.ToString().ToLower());
+                default: return string.Empty;
+            }
         }
 
         internal static string Copy(Channel type = Channel.Both)
