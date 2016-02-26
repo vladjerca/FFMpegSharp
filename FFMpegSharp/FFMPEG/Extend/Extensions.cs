@@ -31,9 +31,9 @@ namespace FFMpegSharp.FFMPEG.Extend
         /// <param name="aQuality">Output audio quality.</param>
         /// <param name="multithread">Use multithreading for conversion.</param>
         /// <returns>Success state.</returns>
-        public static bool ToWebM(this FFMpeg encoder, string source, string output, VideoSize size = VideoSize.Original, AudioQuality aQuality = AudioQuality.Normal, bool multithread = false)
+        public static bool ToWebM(this FFMpeg encoder, string source, string output, VideoSize size = VideoSize.Original, AudioQuality aQuality = AudioQuality.Normal)
         {
-            return encoder.ToWebM(VideoInfo.FromPath(source), new FileInfo(output), size, aQuality, multithread);
+            return encoder.ToWebM(VideoInfo.FromPath(source), new FileInfo(output), size, aQuality);
         }
 
         /// <summary>

@@ -19,7 +19,7 @@ namespace FFMpegSharp.Example
             {
                 var input = new VideoInfo(fileLocation);
                 // Start Encoding
-                encoder.ToMP4(input, new FileInfo(input.FullPath.Replace(input.Extension, ".mp4")));
+                encoder.ToMP4(input, new FileInfo(input.FullName.Replace(input.Extension, ".mp4")));
             }
         }
     }

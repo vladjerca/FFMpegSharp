@@ -57,7 +57,7 @@ namespace FFMpegSharp.FFMPEG.Atomic
 
         internal static string Input(VideoInfo input)
         {
-            return string.Format("-i \"{0}\" ", input.FullPath);
+            return string.Format("-i \"{0}\" ", input.FullName);
         }
 
         internal static string Input(FileInfo input)

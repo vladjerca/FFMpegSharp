@@ -18,7 +18,7 @@ namespace FFMpegSharp
         /// <returns>Video information object with the new video file.</returns>
         public VideoInfo ConvertTo(VideoType type, Speed speed = Speed.SuperFast, VideoSize size = VideoSize.Original, AudioQuality audio = AudioQuality.Normal, bool multithread = false, bool deleteOriginal = false)
         {
-            string outputPath = this.FullPath.Replace(this.Extension, string.Format(".{0}", type.ToString().ToLower()));
+            string outputPath = this.FullName.Replace(this.Extension, string.Format(".{0}", type.ToString().ToLower()));
             FileInfo output = new FileInfo(outputPath);
             return this.ConvertTo(type, output, speed, size, audio, multithread, deleteOriginal);
         }

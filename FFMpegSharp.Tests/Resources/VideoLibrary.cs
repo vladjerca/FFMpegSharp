@@ -36,7 +36,7 @@ namespace FFMpegSharp.Tests.Resources
             return OutputLocation(file, type, "_screenshot");
         }
 
-        private static FileInfo OutputLocation(FileInfo file, Enum type, string keyword)
+        public static FileInfo OutputLocation(this FileInfo file, Enum type, string keyword)
         {
             string originalLocation = file.Directory.FullName,
                    outputFile = file.Name.Replace(file.Extension, keyword + "." + type.ToString().ToLower());

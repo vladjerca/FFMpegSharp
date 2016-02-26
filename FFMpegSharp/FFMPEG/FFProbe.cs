@@ -41,7 +41,9 @@ namespace FFMpegSharp.FFMPEG
         {
             FFProbeHelper.RootExceptionCheck(configuredRoot);
 
-            ffprobePath = configuredRoot + "\\ffprobe.exe";
+            var target = Environment.Is64BitProcess ? "x64" : "x86";
+
+            ffprobePath = configuredRoot + string.Format("\\{0}\\ffprobe.exe", target);
         }
 
         /// <summary>
@@ -61,7 +63,7 @@ namespace FFMpegSharp.FFMPEG
         /// <returns>A video info object containing all details necessary.</returns>
         public VideoInfo ParseVideoInfo(VideoInfo info)
         {
-            string jsonOutput = RunProcess(string.Format("-v quiet -print_format json -show_streams \"{0}\"", info.FullPath));
+            string jsonOutput = RunProcess(string.Format("-v quiet -print_format json -show_streams \"{0}\"", info.FullName));
 
             Dictionary<string, dynamic> dict =
                 (new JavaScriptSerializer()).Deserialize<Dictionary<string, dynamic>>(jsonOutput);

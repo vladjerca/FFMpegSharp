@@ -1,5 +1,6 @@
 ﻿using FFMpegSharp.FFMPEG.Atomic;
 using FFMpegSharp.FFMPEG.Enums;
+using FFMpegSharp.FFMPEG.Exceptions;
 using FFMpegSharp.Helpers;
 using System;
 using System.Diagnostics;
@@ -45,12 +46,12 @@ namespace FFMpegSharp.FFMPEG
                     {
                         if (file.Length == 0)
                         {
-                            throw new Exception(errorData);
+                            throw new FFMpegException(FFMpegExceptionType.Conversion, errorData);
                         }
                     }
                 else
                 {
-                    throw new Exception(errorData);
+                    throw new FFMpegException(FFMpegExceptionType.Conversion, errorData);
                 }
             }
             return SuccessState;
@@ -95,7 +96,9 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.RootExceptionCheck(configuredRoot);
             FFProbeHelper.RootExceptionCheck(configuredRoot);
 
-            ffmpegPath = configuredRoot + "\\ffmpeg.exe";
+            var target = Environment.Is64BitProcess ? "x64" : "x86";
+
+            ffmpegPath = configuredRoot + string.Format("\\{0}\\ffmpeg.exe", target);
         }
 
         /// <summary>
@@ -185,7 +188,7 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="aQuality">Output audio quality.</param>
         /// <param name="multithread">Use multithreading for conversion.</param>
         /// <returns>Success state.</returns>
-        public bool ToWebM(VideoInfo source, FileInfo output, VideoSize size = VideoSize.Original, AudioQuality aQuality = AudioQuality.Normal, bool multithread = false)
+        public bool ToWebM(VideoInfo source, FileInfo output, VideoSize size = VideoSize.Original, AudioQuality aQuality = AudioQuality.Normal)
         {
             totalTime = source.Duration;
 
@@ -193,7 +196,6 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ExtensionExceptionCheck(output, FFMpegHelper.Extensions.WebM);
 
             string conversionArgs = Arguments.Input(source) +
-                                    Arguments.Threads(multithread) +
                                     Arguments.Scale(size) +
                                     Arguments.Video(VideoCodec.LibVPX, 2400) +
                                     Arguments.Speed(16) +
@@ -290,8 +292,8 @@ namespace FFMpegSharp.FFMPEG
 
             for (int i = 0; i < pathList.Length; i++)
             {
-                pathList[i] = videos[i].FullPath.Replace(videos[i].Extension, FFMpegHelper.Extensions.TS);
-                ToTS(videos[i], new FileInfo(videos[i].FullPath.Replace(FFMpegHelper.Extensions.MP4, FFMpegHelper.Extensions.TS)));
+                pathList[i] = videos[i].FullName.Replace(videos[i].Extension, FFMpegHelper.Extensions.TS);
+                ToTS(videos[i], new FileInfo(videos[i].FullName.Replace(FFMpegHelper.Extensions.MP4, FFMpegHelper.Extensions.TS)));
             }
 
             string conversionArgs = Arguments.InputConcat(pathList) +

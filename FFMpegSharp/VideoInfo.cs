@@ -111,9 +111,9 @@ namespace FFMpegSharp
         /// <returns></returns>
         public override string ToString()
         {
-            return "Video Path : " + FullPath + Environment.NewLine +
+            return "Video Path : " + FullName + Environment.NewLine +
                    "Video Root : " + Directory.FullName + Environment.NewLine +
-                   "Video Name: " + FileName + Environment.NewLine +
+                   "Video Name: " + Name + Environment.NewLine +
                    "Video Extension : " + Extension + Environment.NewLine +
                    "Video Duration : " + Duration + Environment.NewLine +
                    "Audio Format : " + AudioFormat + Environment.NewLine +
@@ -127,12 +127,12 @@ namespace FFMpegSharp
         /// <summary>
         /// Gets the name of the file.
         /// </summary>
-        public string FileName { get { return file.Name; } }
+        public string Name { get { return file.Name; } }
 
         /// <summary>
         /// Gets the full path of the file.
         /// </summary>
-        public string FullPath { get { return file.FullName; } }
+        public string FullName { get { return file.FullName; } }
 
         /// <summary>
         /// Gets the file extension.
@@ -147,7 +147,7 @@ namespace FFMpegSharp
         /// <summary>
         /// Gets a flag indicating if the file exists (no cache, per call verification).
         /// </summary>
-        public bool Exists { get { return File.Exists(FullPath); } }
+        public bool Exists { get { return File.Exists(FullName); } }
 
         /// <summary>
         /// Gets the creation date.
@@ -175,7 +175,7 @@ namespace FFMpegSharp
         /// <param name="destination"></param>
         public void MoveTo(DirectoryInfo destination)
         {
-            string newLocation = string.Format("{0}\\{1}{2}", destination.FullName, FileName, Extension);
+            string newLocation = string.Format("{0}\\{1}{2}", destination.FullName, Name, Extension);
             file.MoveTo(newLocation);
             file = new FileInfo(newLocation);
         }
@@ -207,7 +207,7 @@ namespace FFMpegSharp
             {
                 case VideoType.MP4: success = FFmpeg.ToMP4(this, output, speed, size, audio, multithread); break;
                 case VideoType.OGV: success = FFmpeg.ToOGV(this, output, size, audio, multithread); break;
-                case VideoType.WebM: success = FFmpeg.ToWebM(this, output, size, audio, multithread); break;
+                case VideoType.WebM: success = FFmpeg.ToWebM(this, output, size, audio); break;
                 case VideoType.TS: success = FFmpeg.ToTS(this, output); break;
                 default: throw new ArgumentException("Video type is not supported yet!");
             }
@@ -357,6 +357,17 @@ namespace FFMpegSharp
         public void CancelOperation()
         {
             FFmpeg.Stop();
+        }
+
+        /// <summary>
+        /// See if ffmpeg process associated to this video is idle (not alive).
+        /// </summary>
+        public bool OperationIdle
+        {
+            get
+            {
+                return !FFmpeg.IsWorking;
+            }
         }
     }
 }
