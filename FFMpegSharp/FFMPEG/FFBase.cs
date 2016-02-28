@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Diagnostics;
+using System.Linq;
 
 namespace FFMpegSharp.FFMPEG
 {
@@ -57,7 +58,7 @@ namespace FFMpegSharp.FFMPEG
                     processHasExited = true;
                 }
 
-                return process != null && !processHasExited && Process.GetProcessById(process.Id) != null;
+                return !processHasExited && Process.GetProcesses().Any(x => x.Id == process.Id);
             }
         }
 

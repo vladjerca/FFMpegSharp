@@ -66,7 +66,7 @@ namespace FFMpegSharp.FFMPEG
             Trace.WriteLine(e.Data);
         #endif
 
-            if (IsWorking && e.Data != null && OnProgress != null)
+            if (OnProgress != null && e.Data != null && IsWorking)
             {
                 Regex r = new Regex(@"\w\w:\w\w:\w\w");
                 Match m = r.Match(e.Data);
