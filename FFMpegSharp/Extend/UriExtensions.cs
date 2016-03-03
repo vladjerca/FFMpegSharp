@@ -1,6 +1,6 @@
-﻿using FFMpegSharp.FFMPEG;
-using System;
+﻿using System;
 using System.IO;
+using FFMpegSharp.FFMPEG;
 
 namespace FFMpegSharp.Extend
 {

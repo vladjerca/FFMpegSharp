@@ -1,7 +1,7 @@
-﻿using FFMpegSharp.FFMPEG;
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
+using FFMpegSharp.FFMPEG;
 
 namespace FFMpegSharp.Extend
 {
@@ -9,7 +9,7 @@ namespace FFMpegSharp.Extend
     {
         public static VideoInfo AddAudio(this Bitmap poster, FileInfo audio, FileInfo output)
         {
-            string destination = string.Format("{0}.png", Environment.TickCount);
+            var destination = $"{Environment.TickCount}.png";
 
             poster.Save(destination);
 

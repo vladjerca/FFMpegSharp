@@ -1,12 +1,12 @@
-﻿using FFMpegSharp.FFMPEG.Exceptions;
-using System;
+﻿using System;
 using System.IO;
+using FFMpegSharp.FFMPEG.Exceptions;
 
 namespace FFMpegSharp.Helpers
 {
-    public class FFProbeHelper
+    public class FfProbeHelper
     {
-        public static int GCD(int first, int second)
+        public static int Gcd(int first, int second)
         {
             while (first != 0 && second != 0)
             {
@@ -20,14 +20,16 @@ namespace FFMpegSharp.Helpers
         public static void RootExceptionCheck(string root)
         {
             if (root == null)
-                throw new FFMpegException(FFMpegExceptionType.Dependency, "FFProbe root is not configured in app config. Missing key 'ffmpegRoot'.");
+                throw new FFMpegException(FFMpegExceptionType.Dependency,
+                    "FFProbe root is not configured in app config. Missing key 'ffmpegRoot'.");
 
             var target = Environment.Is64BitProcess ? "x64" : "x86";
-            
-            string path = root + string.Format("\\{0}\\ffprobe.exe", target);
+
+            var path = root + $"\\{target}\\ffprobe.exe";
 
             if (!File.Exists(path))
-                throw new FFMpegException(FFMpegExceptionType.Dependency, string.Format("FFProbe cannot be found in the in {0}...", path));
+                throw new FFMpegException(FFMpegExceptionType.Dependency,
+                    $"FFProbe cannot be found in the in {path}...");
         }
     }
 }

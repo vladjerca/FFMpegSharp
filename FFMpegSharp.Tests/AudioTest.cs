@@ -1,9 +1,9 @@
-﻿using FFMpegSharp.Enums;
+﻿using System.Drawing;
+using System.IO;
+using FFMpegSharp.Enums;
 using FFMpegSharp.Extend;
 using FFMpegSharp.Tests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Drawing;
-using System.IO;
 
 namespace FFMpegSharp.Tests
 {
@@ -13,7 +13,7 @@ namespace FFMpegSharp.Tests
         [TestMethod]
         public void Audio_Remove()
         {
-            var output = Input.OutputLocation(VideoType.MP4);
+            var output = Input.OutputLocation(VideoType.Mp4);
 
             try
             {
@@ -31,10 +31,10 @@ namespace FFMpegSharp.Tests
         [TestMethod]
         public void Audio_Save()
         {
-            var output = Input.OutputLocation(AudioType.MP3);
+            var output = Input.OutputLocation(AudioType.Mp3);
 
             try
-            { 
+            {
                 VideoInfo.FromFileInfo(Input).ExtractAudio(output);
 
                 Assert.IsTrue(File.Exists(output.FullName));
@@ -49,7 +49,7 @@ namespace FFMpegSharp.Tests
         [TestMethod]
         public void Audio_Add()
         {
-            var output = Input.OutputLocation(VideoType.MP4);
+            var output = Input.OutputLocation(VideoType.Mp4);
             try
             {
                 var input = VideoInfo.FromFileInfo(VideoLibrary.LocalVideoNoAudio);
@@ -68,7 +68,7 @@ namespace FFMpegSharp.Tests
         [TestMethod]
         public void Image_AddAudio()
         {
-            var output = Input.OutputLocation(VideoType.MP4);
+            var output = Input.OutputLocation(VideoType.Mp4);
 
             try
             {

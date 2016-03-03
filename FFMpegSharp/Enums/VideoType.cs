@@ -2,9 +2,9 @@
 {
     public enum VideoType
     {
-        MP4,
+        Mp4,
         WebM,
-        OGV,
-        TS
+        Ogv,
+        Ts
     }
 }

@@ -1,25 +1,23 @@
-﻿using FFMpegSharp.FFMPEG;
-using System;
+﻿using System;
 using System.IO;
+using System.Linq;
+using FFMpegSharp.FFMPEG;
 
 namespace FFMpegSharp.Example
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            FFMpeg encoder = new FFMpeg();
+            var encoder = new FFMpeg();
 
             // Bind Progress Handler
-            encoder.OnProgress += (double percentage) => {
-                Console.WriteLine("Progress {0}%", percentage);
-            };
-            
-            foreach(var fileLocation in args)
+            encoder.OnProgress += percentage => { Console.WriteLine("Progress {0}%", percentage); };
+
+            foreach (var input in args.Select(fileLocation => new VideoInfo(fileLocation)))
             {
-                var input = new VideoInfo(fileLocation);
                 // Start Encoding
-                encoder.ToMP4(input, new FileInfo(input.FullName.Replace(input.Extension, ".mp4")));
+                encoder.ToMp4(input, new FileInfo(input.FullName.Replace(input.Extension, ".mp4")));
             }
         }
     }

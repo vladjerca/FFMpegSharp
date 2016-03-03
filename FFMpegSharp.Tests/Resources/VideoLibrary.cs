@@ -1,17 +1,17 @@
-﻿using FFMpegSharp.Enums;
-using System;
+﻿using System;
 using System.IO;
+using FFMpegSharp.Enums;
 
 namespace FFMpegSharp.Tests.Resources
 {
     public enum AudioType
     {
-        MP3
+        Mp3
     }
 
     public enum ImageType
     {
-        PNG
+        Png
     }
 
     public static class VideoLibrary
@@ -39,9 +39,9 @@ namespace FFMpegSharp.Tests.Resources
         public static FileInfo OutputLocation(this FileInfo file, Enum type, string keyword)
         {
             string originalLocation = file.Directory.FullName,
-                   outputFile = file.Name.Replace(file.Extension, keyword + "." + type.ToString().ToLower());
+                outputFile = file.Name.Replace(file.Extension, keyword + "." + type.ToString().ToLower());
 
-            return new FileInfo(string.Format("{0}\\{1}", originalLocation, outputFile));
+            return new FileInfo($"{originalLocation}\\{outputFile}");
         }
     }
 }

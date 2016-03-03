@@ -3,22 +3,22 @@
     internal enum VideoCodec
     {
         LibX264,
-        LibVPX,
+        LibVpx,
         LibTheora,
-        PNG,
-        MpegTS
+        Png,
+        MpegTs
     }
 
     internal enum AudioCodec
     {
-        AAC,
+        Aac,
         LibVorbis
     }
 
     internal enum Filter
     {
-        H264_MP4ToAnnexB,
-        AAC_ADTSToASC
+        H264_Mp4ToAnnexB,
+        Aac_AdtstoAsc
     }
 
     internal enum Channel
