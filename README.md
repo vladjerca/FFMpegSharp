@@ -22,9 +22,9 @@ static void Main(string[] args)
             string inputFile = "G:\\input.mp4";
             
             // loaded from configuration
-            FFProbe infoDecoder = new FFProbe();
+            var video = new VideoInfo(inputFile);
 
-            string output = infoDecoder.ParseVideoInfo(inputFile).ToString();
+            string output = video.ToString();
 
             Console.WriteLine(output);
         }
@@ -49,41 +49,56 @@ Sample output:
 Convert your video files to web ready formats:
 
 ```csharp
-static void Main(string[] args)
-        {
-            string  inputFile = "input_path_goes_here",
-                    outputFile = "output_path_goes_here";
-            // string ffmpegRoot = 
-            // FFMpeg / FFProbe root must be set in the application configuration -> Key: "ffmpegRoot"
-            FFMpeg encoder = new FFMpeg();
-            
-            // easily track conversion progress
-            encoder.OnProgress += encoder_OnProgress;
-            
-            // input and output strings are required
-            // all other parameters are optional
-            encoder.ToMP4(inputFile, outputFile, Speed.Slower, VideoSize.FullHD, true);
-            encoder.ToOGV(inputFile, outputFile, VideoSize.HD, true);
-            encoder.ToWebM(inputFile, outputFile, VideoSize.Original, true);
-            encoder.ToTS(inputFile, outputFile);
-        }
-        
-static void encoder_OnProgress(int percentage)
-        {
-            Console.WriteLine("Progress {0}%", percentage);
-        }
+	static void Main(string[] args)
+	{
+		string inputFile = "input_path_goes_here";
+		FileInfo outputFile = new FileInfo("output_path_goes_here");
+
+		var video = VideoInfo.FromPath(inputFile);
+				
+		// easily track conversion progress
+		video.OnConversionProgress += video_OnConversionProgress;
+
+		// input and output strings are required
+		// all other parameters are optional
+		video.ConvertTo(VideoType.Mp4, outputFile, Speed.UltraFast,
+			VideoSize.Original,
+			AudioQuality.Hd, 
+			true, 
+			false);
+		video.ConvertTo(VideoType.Ogv, outputFile, Speed.UltraFast,
+			VideoSize.Original,
+			AudioQuality.Hd,
+			true,
+			false);
+		video.ConvertTo(VideoType.WebM, outputFile, Speed.UltraFast,
+			VideoSize.Original,
+			AudioQuality.Hd,
+			true,
+			false);
+		video.ConvertTo(VideoType.Ts, outputFile, Speed.UltraFast,
+			VideoSize.Original,
+			AudioQuality.Hd,
+			true,
+			false);
+	}
+
+	static void video_OnConversionProgress(double percentage)
+	{
+		Console.WriteLine("Progress {0}%", percentage);
+	}
 ```
 
 Easily capture screens from your videos:
 ```csharp
 static void Main(string[] args)
         {
-            string inputFile = "input_path_goes_here",
-                   outputFile = "output_path_goes_here";
+            string inputFile = "input_path_goes_here";
+            FileInfo output = new FileInfo("output_path_goes_here");
 
-            FFMpeg encoder = new FFMpeg();
+            var video = VideoInfo.FromPath(inputFile);
 
-            encoder.SaveThumbnail(inputFile, outputFile, new TimeSpan(0, 0, 15));
+            video.Snapshot(output, new Size(200, 400), TimeSpan.FromMinutes(1));
         }
 ```
 
@@ -91,11 +106,12 @@ Join video parts:
 ```csharp
 static void Main(string[] args)
         {
-            string ffmpegRoot = ConfigurationManager.AppSettings["ffmpegRoot"];
-            
             FFMpeg encoder = new FFMpeg();
 
-            encoder.Join(@"..\joined_video.mp4", @"..\part1.mp4", @"..\part2.mp4", @"..\part3.mp4");
+            encoder.Join(new FileInfo(@"..\joined_video.mp4"), 
+                VideoInfo.FromPath(@"..\part1.mp4"),
+                VideoInfo.FromPath(@"..\part2.mp4"),
+                VideoInfo.FromPath(@"..\part3.mp4"));
         }
 ```
 
@@ -105,10 +121,8 @@ static void Main(string[] args)
         {
             string inputFile = "input_path_goes_here",
                    outputFile = "output_path_goes_here";
-
-            FFMpeg encoder = new FFMpeg();
-
-            encoder.Mute(inputFile, outputFile);
+            
+            VideoInfo.FromPath(inputFile).Mute(new FileInfo(outputFile));
         }
 ```
 
@@ -118,14 +132,12 @@ static void Main(string[] args)
         {
             string inputVideoFile = "input_path_goes_here",
                    outputAudioFile = "output_path_goes_here";
-
-            FFMpeg encoder = new FFMpeg();
-
-            encoder.SaveAudio(inputVideoFile, outputAudioFile);
+                        
+            VideoInfo.FromPath(inputVideoFile).ExtractAudio(new FileInfo(outputAudioFile));
         }
 ```
 
-Save audio track from video:
+Add audio track to video:
 ```csharp
 static void Main(string[] args)
         {
@@ -135,7 +147,7 @@ static void Main(string[] args)
 
             FFMpeg encoder = new FFMpeg();
 
-            encoder.AddAudio(inputVideoFile, inputAudioFile, outputVideoFile);
+            VideoInfo.FromPath(inputVideoFile).ReplaceAudio(new FileInfo(inputAudioFile), new FileInfo(outputVideoFile));
         }
 ```
 
@@ -149,7 +161,8 @@ static void Main(string[] args)
 
             FFMpeg encoder = new FFMpeg();
 
-            encoder.AddAudio(inputImageFile, inputAudioFile, outputVideoFile);
+            var image = (Bitmap)Image.FromFile(inputImageFile);
+            image.AddAudio(new FileInfo(inputAudioFile), new FileInfo(outputVideoFile);
         }
 ```
 
@@ -159,14 +172,14 @@ static void Main(string[] args)
         {
             string inputVideoFile = "input_path_goes_here",
                    outputVideoFile = "input_path_goes_here";
-                   
+
             FFMpeg encoder = new FFMpeg();
-            
+
             // start the conversion process
             Task.Run(() => {
-              encoder.ToMP4(inputVideoFile, outputVideoFile);
+                encoder.ToMp4(new VideoInfo(inputVideoFile), new FileInfo(outputVideoFile));
             });
-            
+
             // stop encoding after 2 seconds (only for example purposes)
             Thread.Sleep(2000);
             encoder.Stop();
