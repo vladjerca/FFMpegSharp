@@ -100,9 +100,11 @@ namespace FFMpegSharp.FFMPEG
             FfMpegHelper.ConversionExceptionCheck(source, output);
             FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.Mp4);
 
+            var newHeight = source.Height * (source.Width / (int)size);
+
             var conversionArgs = Arguments.Input(source) +
                                  Arguments.Threads(multithread) +
-                                 Arguments.Scale(size) +
+                                 Arguments.Scale(size, newHeight) +
                                  Arguments.Video(VideoCodec.LibX264, 2400) +
                                  Arguments.Speed(speed) +
                                  Arguments.Audio(AudioCodec.Aac, aQuality) +
@@ -127,8 +129,10 @@ namespace FFMpegSharp.FFMPEG
             FfMpegHelper.ConversionExceptionCheck(source, output);
             FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.WebM);
 
+            var newHeight = source.Height * (source.Width / (int)size);
+
             var conversionArgs = Arguments.Input(source) +
-                                 Arguments.Scale(size) +
+                                 Arguments.Scale(size, newHeight) +
                                  Arguments.Video(VideoCodec.LibVpx, 2400) +
                                  Arguments.Speed(16) +
                                  Arguments.Audio(AudioCodec.LibVorbis, aQuality) +
@@ -154,9 +158,11 @@ namespace FFMpegSharp.FFMPEG
             FfMpegHelper.ConversionExceptionCheck(source, output);
             FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.Ogv);
 
+            var newHeight = source.Height * (source.Width / (int)size);
+
             var conversionArgs = Arguments.Input(source) +
                                  Arguments.Threads(multithread) +
-                                 Arguments.Scale(size) +
+                                 Arguments.Scale(size, newHeight) +
                                  Arguments.Video(VideoCodec.LibTheora, 2400) +
                                  Arguments.Speed(16) +
                                  Arguments.Audio(AudioCodec.LibVorbis, aQuality) +
@@ -177,7 +183,7 @@ namespace FFMpegSharp.FFMPEG
 
             FfMpegHelper.ConversionExceptionCheck(source, output);
             FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.Ts);
-
+            
             var conversionArgs = Arguments.Input(source) +
                                  Arguments.Copy() +
                                  Arguments.BitStreamFilter(Channel.Video, Filter.H264_Mp4ToAnnexB) +

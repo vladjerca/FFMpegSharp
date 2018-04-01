@@ -1,18 +1,11 @@
 ﻿using System;
 using System.IO;
-using FFMpegSharp.FFMPEG.Atomic;
-using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.FFMPEG.Exceptions;
 
 namespace FFMpegSharp.Helpers
 {
     public static class FfMpegHelper
     {
-        public static string GetScale(VideoSize size)
-        {
-            return Arguments.Scale(size);
-        }
-
         public static void ConversionExceptionCheck(VideoInfo originalVideo, FileInfo convertedPath)
         {
             if (File.Exists(convertedPath.FullName))

@@ -1,7 +1,7 @@
 # FFMpegSharp
 ![FFMpeg Sharp](https://media.licdn.com/mpr/mpr/jc/AAEAAQAAAAAAAAL-AAAAJDEyYTdkMjAyLTc2M2ItNDM2YS1iOTc5LTAwZTU1YWM0NjdiNQ.jpg)
 
-FFMpegSharp is a great way to use FFMpeg encoding when writing video applications, client-side and server-side. It has wrapper methods that allow conversion to all web formats: MP4, OGV, WebM and methods of capturing screens from the videos. 
+FFMpegSharp is a great way to use FFMpeg encoding when writing video applications, client-side and server-side. It has wrapper methods that allow conversion to all web formats: MP4, OGV, TS and methods of capturing screens from the videos. 
 
 ### Getting started
 
@@ -67,11 +67,6 @@ Convert your video files to web ready formats:
 			true, 
 			false);
 		video.ConvertTo(VideoType.Ogv, outputFile, Speed.UltraFast,
-			VideoSize.Original,
-			AudioQuality.Hd,
-			true,
-			false);
-		video.ConvertTo(VideoType.WebM, outputFile, Speed.UltraFast,
 			VideoSize.Original,
 			AudioQuality.Hd,
 			true,

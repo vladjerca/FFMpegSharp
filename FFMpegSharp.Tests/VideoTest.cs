@@ -9,7 +9,7 @@ namespace FFMpegSharp.Tests
     [TestClass]
     public class VideoTest : BaseTest
     {
-        public bool Convert(VideoType type, bool multithread = false)
+        public bool Convert(VideoType type, bool multithread = false, VideoSize size = VideoSize.Original)
         {
             var output = Input.OutputLocation(type);
 
@@ -17,13 +17,25 @@ namespace FFMpegSharp.Tests
             {
                 var input = VideoInfo.FromFileInfo(Input);
 
-                input.ConvertTo(type, output, Speed.SuperFast, VideoSize.Original, AudioQuality.Ultra, multithread);
+                input.ConvertTo(type, output, Speed.SuperFast, size, AudioQuality.Ultra, multithread);
 
                 var outputVideo = new VideoInfo(output.FullName);
 
                 return File.Exists(output.FullName) &&
-                       (outputVideo.Duration == input.Duration ||
-                        (outputVideo.Width == input.Width && outputVideo.Height == input.Height));
+                       outputVideo.Duration == input.Duration &&
+                       (
+                           (
+                           size == VideoSize.Original && 
+                           outputVideo.Width == input.Width && 
+                           outputVideo.Height == input.Height
+                           ) ||
+                           (
+                           size != VideoSize.Original &&
+                           outputVideo.Width != input.Width &&
+                           outputVideo.Height != input.Height &&
+                           outputVideo.Width == (int) size
+                           )
+                       );
             }
             finally
             {
@@ -44,12 +56,19 @@ namespace FFMpegSharp.Tests
             Assert.IsTrue(Convert(VideoType.Ts));
         }
 
+
         [TestMethod]
-        public void Video_ToWEBM()
+        public void Video_ToOGV_Resize()
         {
-            Assert.IsTrue(Convert(VideoType.WebM));
+            Assert.IsTrue(Convert(VideoType.Ogv, true, VideoSize.Ed));
         }
 
+        [TestMethod]
+        public void Video_ToMP4_Resize()
+        {
+            Assert.IsTrue(Convert(VideoType.Mp4, true, VideoSize.Ed));
+        }
+        
         [TestMethod]
         public void Video_ToOGV()
         {

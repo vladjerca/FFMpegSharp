@@ -74,9 +74,9 @@ namespace FFMpegSharp.FFMPEG.Atomic
             return $"\"{output}\"";
         }
 
-        internal static string Scale(VideoSize size)
+        internal static string Scale(VideoSize size, int height)
         {
-            return size == VideoSize.Original ? string.Empty : $"-vf scale={(int) size} ";
+            return size == VideoSize.Original ? string.Empty : $"-vf scale={(int) size}:{height} ";
         }
 
         internal static string Size(Size? size)

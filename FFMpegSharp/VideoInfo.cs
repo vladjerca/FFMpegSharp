@@ -231,9 +231,6 @@ namespace FFMpegSharp
                 case VideoType.Ogv:
                     success = FFmpeg.ToOgv(this, output, size, audio, multithread);
                     break;
-                case VideoType.WebM:
-                    success = FFmpeg.ToWebM(this, output, size, audio);
-                    break;
                 case VideoType.Ts:
                     success = FFmpeg.ToTs(this, output);
                     break;
