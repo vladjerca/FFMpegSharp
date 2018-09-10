@@ -1,13 +1,13 @@
-﻿using System;
+﻿using FFMpegSharp.FFMPEG.Atomic;
+using FFMpegSharp.FFMPEG.Enums;
+using FFMpegSharp.FFMPEG.Exceptions;
+using FFMpegSharp.Helpers;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using FFMpegSharp.FFMPEG.Atomic;
-using FFMpegSharp.FFMPEG.Enums;
-using FFMpegSharp.FFMPEG.Exceptions;
-using FFMpegSharp.Helpers;
 
 namespace FFMpegSharp.FFMPEG
 {
@@ -44,7 +44,7 @@ namespace FFMpegSharp.FFMPEG
         public bool Snapshot(VideoInfo source, FileInfo output, Size? size = null, TimeSpan? captureTime = null)
         {
             if (captureTime == null)
-                captureTime = TimeSpan.FromSeconds(source.Duration.TotalSeconds/3);
+                captureTime = TimeSpan.FromSeconds(source.Duration.TotalSeconds / 3);
 
             if (output.Extension.ToLower() != FfMpegHelper.Extensions.Png)
                 output = new FileInfo(output.FullName.Replace(output.Extension, FfMpegHelper.Extensions.Png));
@@ -58,16 +58,16 @@ namespace FFMpegSharp.FFMPEG
             {
                 if (size.Value.Width == 0)
                 {
-                    var ratio = source.Width/(double) size.Value.Width;
+                    var ratio = source.Width / (double)size.Value.Width;
 
-                    size = new Size((int) (source.Width*ratio), (int) (source.Height*ratio));
+                    size = new Size((int)(source.Width * ratio), (int)(source.Height * ratio));
                 }
 
                 if (size.Value.Height == 0)
                 {
-                    var ratio = source.Height/(double) size.Value.Height;
+                    var ratio = source.Height / (double)size.Value.Height;
 
-                    size = new Size((int) (source.Width*ratio), (int) (source.Height*ratio));
+                    size = new Size((int)(source.Width * ratio), (int)(source.Height * ratio));
                 }
             }
 
@@ -184,7 +184,7 @@ namespace FFMpegSharp.FFMPEG
 
             FfMpegHelper.ConversionExceptionCheck(source, output);
             FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.Ts);
-            
+
             var conversionArgs = Arguments.Input(source) +
                                  Arguments.Copy() +
                                  Arguments.BitStreamFilter(Channel.Video, Filter.H264_Mp4ToAnnexB) +
@@ -239,14 +239,49 @@ namespace FFMpegSharp.FFMPEG
                                  Arguments.BitStreamFilter(Channel.Audio, Filter.Aac_AdtstoAsc) +
                                  Arguments.Output(output);
 
-            var result = RunProcess(conversionArgs, output);
-
-            if (result)
+            try
+            {
+                return RunProcess(conversionArgs, output);
+            }
+            finally
+            {
                 foreach (var path in pathList)
                     if (File.Exists(path))
                         File.Delete(path);
+            }
+        }
 
-            return result;
+        public bool JoinImageSequence(FileInfo output, double frameRate = 30, params ImageInfo[] images)
+        {
+            var pathList = new string[images.Length];
+
+            for (var i = 0; i < pathList.Length; i++)
+            {
+                pathList[i] = images[i].FullName.Replace(images[i].Name, $"{i.ToString().PadLeft(9, '0')}{images[i].Extension}");
+
+                File.Copy(images[i].FullName, pathList[i]);
+            }
+
+            var firstImage = images[0];
+
+            var conversionArgs = Arguments.FrameRate(frameRate) +
+                Arguments.Size(new Size(firstImage.Width, firstImage.Height)) +
+                Arguments.StartNumber(0) +
+                Arguments.Input($"{firstImage.Directory}\\%09d.png") +
+                Arguments.FrameOutputCount(images.Length) +
+                Arguments.Video(VideoCodec.LibX264) +
+                Arguments.YuvFormat() +
+                Arguments.Output(output);
+            try
+            {
+                return RunProcess(conversionArgs, output);
+            }
+            finally
+            {
+                foreach (var path in pathList)
+                    if (File.Exists(path))
+                        File.Delete(path);
+            }
         }
 
         /// <summary>
@@ -404,7 +439,7 @@ namespace FFMpegSharp.FFMPEG
             if (!m.Success) return;
 
             var t = TimeSpan.Parse(m.Value, CultureInfo.InvariantCulture);
-            var percentage = Math.Round(t.TotalSeconds/_totalTime.TotalSeconds*100, 2);
+            var percentage = Math.Round(t.TotalSeconds / _totalTime.TotalSeconds * 100, 2);
             OnProgress(percentage);
         }
 

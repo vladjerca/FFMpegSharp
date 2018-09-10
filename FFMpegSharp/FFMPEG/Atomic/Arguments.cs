@@ -74,6 +74,11 @@ namespace FFMpegSharp.FFMPEG.Atomic
             return $"\"{output}\"";
         }
 
+        internal static string Input(string template)
+        {
+            return $"-i \"{template}\" ";
+        }
+
         internal static string Scale(VideoSize size, int height)
         {
             return size == VideoSize.Original ? string.Empty : $"-vf scale={(int) size}:{height} ";
@@ -142,6 +147,21 @@ namespace FFMpegSharp.FFMPEG.Atomic
         public static string InputConcat(string[] paths)
         {
             return $"-i \"concat:{string.Join(@"|", paths)}\" ";
+        }
+
+        internal static object FrameRate(double frameRate)
+        {
+            return $"-r {frameRate} ";
+        }
+
+        internal static string StartNumber(int v)
+        {
+            return $"-start_number {v} ";
+        }
+
+        internal static string YuvFormat()
+        {
+            return $"-pix_fmt yuv420p ";
         }
     }
 }
