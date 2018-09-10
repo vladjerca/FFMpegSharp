@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using FFMpegSharp.FFMPEG.Atomic;
@@ -402,7 +403,7 @@ namespace FFMpegSharp.FFMPEG
             if (!e.Data.Contains("frame")) return;
             if (!m.Success) return;
 
-            var t = TimeSpan.Parse(m.Value);
+            var t = TimeSpan.Parse(m.Value, CultureInfo.InvariantCulture);
             var percentage = Math.Round(t.TotalSeconds/_totalTime.TotalSeconds*100, 2);
             OnProgress(percentage);
         }
