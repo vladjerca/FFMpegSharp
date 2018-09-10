@@ -20,6 +20,8 @@ namespace FFMpegSharp.Tests.Resources
         public static readonly FileInfo LocalVideoNoAudio = new FileInfo(".\\Resources\\mute.mp4");
         public static readonly FileInfo LocalAudio = new FileInfo(".\\Resources\\audio.mp3");
         public static readonly FileInfo LocalCover = new FileInfo(".\\Resources\\cover.png");
+        public static readonly FileInfo ImageDirectory = new FileInfo(".\\Resources\\images");
+        public static readonly FileInfo ImageJoinOutput = new FileInfo(".\\Resources\\images\\output.mp4");
 
         public static FileInfo OutputLocation(this FileInfo file, VideoType type)
         {

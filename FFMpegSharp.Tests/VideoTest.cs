@@ -1,8 +1,9 @@
-﻿using System.IO;
-using FFMpegSharp.Enums;
+﻿using FFMpegSharp.Enums;
 using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.Tests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
+using System.Linq;
 
 namespace FFMpegSharp.Tests
 {
@@ -25,15 +26,15 @@ namespace FFMpegSharp.Tests
                        outputVideo.Duration == input.Duration &&
                        (
                            (
-                           size == VideoSize.Original && 
-                           outputVideo.Width == input.Width && 
+                           size == VideoSize.Original &&
+                           outputVideo.Width == input.Width &&
                            outputVideo.Height == input.Height
                            ) ||
                            (
                            size != VideoSize.Original &&
                            outputVideo.Width != input.Width &&
                            outputVideo.Height != input.Height &&
-                           outputVideo.Width == (int) size
+                           outputVideo.Width == (int)size
                            )
                        );
             }
@@ -68,7 +69,7 @@ namespace FFMpegSharp.Tests
         {
             Assert.IsTrue(Convert(VideoType.Mp4, true, VideoSize.Ed));
         }
-        
+
         [TestMethod]
         public void Video_ToOGV()
         {
@@ -140,6 +141,32 @@ namespace FFMpegSharp.Tests
 
                 if (File.Exists(newInput.FullName))
                     File.Delete(newInput.FullName);
+            }
+        }
+
+        [TestMethod]
+        public void Video_Join_Image_Sequence()
+        {
+            try
+            {
+                var images = Directory.EnumerateFiles(VideoLibrary.ImageDirectory.FullName)
+                    .Where(file => file.ToLower().EndsWith(".png"))
+                    .Select(file => new ImageInfo(file)).ToArray();
+
+                var result = images.First().JoinWith(VideoLibrary.ImageJoinOutput, images: images.Skip(1).ToArray());
+
+                VideoLibrary.ImageJoinOutput.Refresh();
+
+                Assert.IsTrue(VideoLibrary.ImageJoinOutput.Exists);
+                Assert.AreEqual(3, result.Duration.Seconds);
+                Assert.AreEqual(images.First().Width, result.Width);
+                Assert.AreEqual(images.First().Height, result.Height);
+            }
+            finally
+            {
+                VideoLibrary.ImageJoinOutput.Refresh();
+                if (VideoLibrary.ImageJoinOutput.Exists)
+                    VideoLibrary.ImageJoinOutput.Delete();
             }
         }
     }
