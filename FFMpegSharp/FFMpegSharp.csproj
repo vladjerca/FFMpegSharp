@@ -46,6 +46,7 @@
     <Compile Include="Extend\BitmapExtensions.cs" />
     <Compile Include="Extend\UriExtensions.cs" />
     <Compile Include="FFMPEG\Exceptions\FFMpegException.cs" />
+    <Compile Include="ImageInfo.cs" />
     <Compile Include="VideoInfoExtend.cs" />
     <Compile Include="FFMPEG\Atomic\Arguments.cs" />
     <Compile Include="FFMPEG\Enums\AudioQuality.cs" />
