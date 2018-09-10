@@ -1,7 +1,8 @@
-﻿using System;
+﻿using FFMpegSharp.Helpers;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Web.Script.Serialization;
-using FFMpegSharp.Helpers;
 
 namespace FFMpegSharp.FFMPEG
 {
@@ -45,7 +46,7 @@ namespace FFMpegSharp.FFMPEG
             double numberData = 0;
             try
             {
-                numberData = double.Parse(dict["streams"][vid]["duration"]);
+                numberData = double.Parse(dict["streams"][vid]["duration"], CultureInfo.InvariantCulture);
                 info.Duration = TimeSpan.FromSeconds(numberData);
                 info.Duration = info.Duration.Subtract(TimeSpan.FromMilliseconds(info.Duration.Milliseconds));
             }
@@ -62,7 +63,7 @@ namespace FFMpegSharp.FFMPEG
             try
             {
                 info.VideoFormat = dict["streams"][vid]["codec_name"];
-                videoSize = double.Parse(dict["streams"][vid]["bit_rate"])*numberData/8388608;
+                videoSize = double.Parse(dict["streams"][vid]["bit_rate"], CultureInfo.InvariantCulture) * numberData / 8388608;
             }
             catch (Exception)
             {
@@ -73,8 +74,8 @@ namespace FFMpegSharp.FFMPEG
             try
             {
                 info.AudioFormat = dict["streams"][aud]["codec_name"];
-                audioSize = double.Parse(dict["streams"][aud]["bit_rate"])*
-                            double.Parse(dict["streams"][aud]["duration"])/8388608;
+                audioSize = double.Parse(dict["streams"][aud]["bit_rate"], CultureInfo.InvariantCulture) *
+                            double.Parse(dict["streams"][aud]["duration"], CultureInfo.InvariantCulture) / 8388608;
             }
             catch (Exception)
             {
@@ -94,11 +95,14 @@ namespace FFMpegSharp.FFMPEG
 
             // Get video aspect ratio
             var cd = FfProbeHelper.Gcd(info.Width, info.Height);
-            info.Ratio = info.Width/cd + ":" + info.Height/cd;
+            info.Ratio = info.Width / cd + ":" + info.Height / cd;
 
             // Get video framerate
-            var fr = ((string) dict["streams"][vid]["r_frame_rate"]).Split('/');
-            info.FrameRate = Math.Round(double.Parse(fr[0])/double.Parse(fr[1]), 3);
+            var fr = ((string)dict["streams"][vid]["r_frame_rate"]).Split('/');
+            info.FrameRate = Math.Round(
+                double.Parse(fr[0], CultureInfo.InvariantCulture) /
+                double.Parse(fr[1], CultureInfo.InvariantCulture),
+                3);
 
             return info;
         }
