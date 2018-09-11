@@ -79,12 +79,24 @@
     <Content Include="Resources\cover.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\images\a.png" />
-    <Content Include="Resources\images\b.png" />
-    <Content Include="Resources\images\c.png" />
-    <Content Include="Resources\images\d.png" />
-    <Content Include="Resources\images\e.png" />
-    <Content Include="Resources\images\f.png" />
+    <Content Include="Resources\images\a.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\images\b.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\images\c.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\images\d.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\images\e.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\images\f.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\input.mp4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
