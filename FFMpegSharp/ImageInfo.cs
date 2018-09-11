@@ -1,4 +1,5 @@
-﻿using FFMpegSharp.FFMPEG;
+﻿using FFMpegSharp.Enums;
+using FFMpegSharp.FFMPEG;
 using FFMpegSharp.Helpers;
 using System;
 using System.Drawing;
@@ -9,14 +10,11 @@ namespace FFMpegSharp
 {
     public partial class ImageInfo
     {
-        private FFMpeg _ffmpeg;
         private FileInfo _file;
-
-        public ConversionHandler OnConversionProgress;
-
+        
         public ImageInfo(FileInfo fileInfo)
         {
-            if (!fileInfo.Extension.ToLower().EndsWith(".png"))
+            if (!fileInfo.Extension.ToLower().EndsWith(FileExtension.Png))
             {
                 throw new Exception("Image joining currently suppors only .png file types");
             }
@@ -29,7 +27,7 @@ namespace FFMpegSharp
             {
                 this.Width = image.Width;
                 this.Height = image.Height;
-                var cd = FfProbeHelper.Gcd(this.Width, this.Height);
+                var cd = FFProbeHelper.Gcd(this.Width, this.Height);
                 this.Ratio = $"{this.Width / cd}:{this.Height / cd}";
             }
 
@@ -48,18 +46,6 @@ namespace FFMpegSharp
         /// <param name="path">Path to video.</param>
         public ImageInfo(string path) : this(new FileInfo(path))
         {
-        }
-
-        private FFMpeg FFmpeg
-        {
-            get
-            {
-                if (_ffmpeg != null && _ffmpeg.IsWorking)
-                    throw new InvalidOperationException(
-                        "Another operation is in progress, please wait for this to finish before launching another operation. To do multiple operations, create another ImageInfo object targeting that file.");
-
-                return _ffmpeg ?? (_ffmpeg = new FFMpeg());
-            }
         }
 
         /// <summary>
@@ -116,11 +102,6 @@ namespace FFMpegSharp
         ///     Gets the parent directory information.
         /// </summary>
         public DirectoryInfo Directory => _file.Directory;
-
-        /// <summary>
-        ///     See if ffmpeg process associated to this video is idle (not alive).
-        /// </summary>
-        public bool OperationIdle => !FFmpeg.IsWorking;
 
         /// <summary>
         ///     Create a image information object from a file information object.
@@ -184,43 +165,6 @@ namespace FFMpegSharp
         public void Delete()
         {
             _file.Delete();
-        }
-
-        /// <summary>
-        ///     Join the image file with other image files.
-        /// </summary>
-        /// <param name="output">Output location of the resulting image file.</param>
-        /// <param name="purgeSources">>Flag original file purging after conversion is done.</param>
-        /// <param name="images">Videos that need to be joined to the image.</param>
-        /// <returns>Video information object with the new image file.</returns>
-        public VideoInfo JoinWith(FileInfo output, double frameRate = 30, bool purgeSources = false, params ImageInfo[] images)
-        {
-            var queuedImages = images.ToList();
-
-            queuedImages.Insert(0, this);
-
-            var success = FFmpeg.JoinImageSequence(output, frameRate, queuedImages.ToArray());
-
-            if (!success)
-                throw new OperationCanceledException("Could not join the images.");
-
-            if (purgeSources)
-            {
-                foreach (var image in images)
-                {
-                    image.Delete();
-                }
-            }
-
-            return new VideoInfo(output);
-        }
-
-        /// <summary>
-        ///     Tell FFMpeg to stop the current process.
-        /// </summary>
-        public void CancelOperation()
-        {
-            FFmpeg.Stop();
         }
     }
 }

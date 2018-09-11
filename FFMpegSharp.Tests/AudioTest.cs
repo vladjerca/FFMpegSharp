@@ -1,9 +1,9 @@
-﻿using System.Drawing;
-using System.IO;
-using FFMpegSharp.Enums;
+﻿using FFMpegSharp.Enums;
 using FFMpegSharp.Extend;
 using FFMpegSharp.Tests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Drawing;
+using System.IO;
 
 namespace FFMpegSharp.Tests
 {
@@ -17,7 +17,7 @@ namespace FFMpegSharp.Tests
 
             try
             {
-                VideoInfo.FromFileInfo(Input).Mute(output);
+                Encoder.Mute(VideoInfo.FromFileInfo(Input), output);
 
                 Assert.IsTrue(File.Exists(output.FullName));
             }
@@ -35,7 +35,7 @@ namespace FFMpegSharp.Tests
 
             try
             {
-                VideoInfo.FromFileInfo(Input).ExtractAudio(output);
+                Encoder.ExtractAudio(VideoInfo.FromFileInfo(Input), output);
 
                 Assert.IsTrue(File.Exists(output.FullName));
             }
@@ -53,7 +53,7 @@ namespace FFMpegSharp.Tests
             try
             {
                 var input = VideoInfo.FromFileInfo(VideoLibrary.LocalVideoNoAudio);
-                input.ReplaceAudio(VideoLibrary.LocalAudio, output);
+                Encoder.ReplaceAudio(input, VideoLibrary.LocalAudio, output);
 
                 Assert.AreEqual(input.Duration, VideoInfo.FromFileInfo(output).Duration);
                 Assert.IsTrue(File.Exists(output.FullName));
@@ -72,8 +72,10 @@ namespace FFMpegSharp.Tests
 
             try
             {
-                var result = new Bitmap(VideoLibrary.LocalCover.FullName).AddAudio(VideoLibrary.LocalAudio, output);
+                var result = new Bitmap(VideoLibrary.LocalCover.FullName)
+                    .AddAudio(VideoLibrary.LocalAudio, output);
 
+                Assert.IsTrue(result.Duration.TotalSeconds > 0);
                 Assert.IsTrue(result.Exists);
             }
             finally

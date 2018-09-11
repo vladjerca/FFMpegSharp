@@ -4,7 +4,7 @@ using FFMpegSharp.FFMPEG.Exceptions;
 
 namespace FFMpegSharp.Helpers
 {
-    public static class FfMpegHelper
+    public static class FFMpegHelper
     {
         public static void ConversionExceptionCheck(VideoInfo originalVideo, FileInfo convertedPath)
         {
@@ -44,16 +44,6 @@ namespace FFMpegSharp.Helpers
             if (!File.Exists(path))
                 throw new FFMpegException(FFMpegExceptionType.Dependency,
                     "FFMpeg cannot be found in the root directory!");
-        }
-
-        public static class Extensions
-        {
-            public static readonly string Mp4 = ".mp4";
-            public static readonly string Mp3 = ".mp3";
-            public static readonly string Ts = ".ts";
-            public static readonly string WebM = ".webm";
-            public static readonly string Ogv = ".ogv";
-            public static readonly string Png = ".png";
         }
     }
 }

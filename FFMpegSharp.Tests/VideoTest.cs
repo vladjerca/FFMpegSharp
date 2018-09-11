@@ -1,7 +1,10 @@
 ﻿using FFMpegSharp.Enums;
+using FFMpegSharp.FFMPEG;
 using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.Tests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
@@ -10,7 +13,7 @@ namespace FFMpegSharp.Tests
     [TestClass]
     public class VideoTest : BaseTest
     {
-        public bool Convert(VideoType type, bool multithread = false, VideoSize size = VideoSize.Original)
+        public bool Convert(VideoType type, bool multithreaded = false, VideoSize size = VideoSize.Original)
         {
             var output = Input.OutputLocation(type);
 
@@ -18,7 +21,7 @@ namespace FFMpegSharp.Tests
             {
                 var input = VideoInfo.FromFileInfo(Input);
 
-                input.ConvertTo(type, output, Speed.SuperFast, size, AudioQuality.Ultra, multithread);
+                Encoder.Convert(input, output, type, size: size, multithreaded: multithreaded);
 
                 var outputVideo = new VideoInfo(output.FullName);
 
@@ -103,9 +106,11 @@ namespace FFMpegSharp.Tests
             {
                 var input = VideoInfo.FromFileInfo(Input);
 
-                using (input.Snapshot(output))
+                using (var bitmap = Encoder.Snapshot(input, output))
                 {
-                    Assert.IsTrue(File.Exists(output.FullName));
+                    Assert.AreEqual(input.Width, bitmap.Width);
+                    Assert.AreEqual(input.Height, bitmap.Height);
+                    Assert.AreEqual(bitmap.RawFormat, ImageFormat.Png);
                 }
             }
             finally
@@ -126,13 +131,12 @@ namespace FFMpegSharp.Tests
                 File.Copy(input.FullName, newInput.FullName);
                 var input2 = VideoInfo.FromFileInfo(newInput);
 
-                input.JoinWith(output, false, input2);
-
-                var outputVideo = new VideoInfo(output.FullName);
-
-                Assert.IsTrue(File.Exists(output.FullName) &&
-                              (outputVideo.Duration - input.Duration == input.Duration ||
-                               (outputVideo.Width == input.Width && outputVideo.Height == input.Height)));
+                var result = Encoder.Join(output, input, input2);
+                
+                Assert.IsTrue(File.Exists(output.FullName));
+                Assert.AreEqual(input.Duration.TotalSeconds * 2, result.Duration.TotalSeconds);
+                Assert.AreEqual(input.Height, result.Height);
+                Assert.AreEqual(input.Width, result.Width);
             }
             finally
             {
@@ -149,24 +153,34 @@ namespace FFMpegSharp.Tests
         {
             try
             {
-                var images = Directory.EnumerateFiles(VideoLibrary.ImageDirectory.FullName)
+                var imageSet = new List<ImageInfo>();
+                Directory.EnumerateFiles(VideoLibrary.ImageDirectory.FullName)
                     .Where(file => file.ToLower().EndsWith(".png"))
-                    .Select(file => new ImageInfo(file)).ToArray();
+                    .ToList()
+                    .ForEach(file =>
+                    {
+                        for (int i = 0; i < 15; i++)
+                        {
+                            imageSet.Add(new ImageInfo(file));
+                        }
+                    });
 
-                var result = images.First().JoinWith(VideoLibrary.ImageJoinOutput, images: images.Skip(1).ToArray());
+                var result = Encoder.JoinImageSequence(VideoLibrary.ImageJoinOutput, images: imageSet.ToArray());
 
                 VideoLibrary.ImageJoinOutput.Refresh();
 
                 Assert.IsTrue(VideoLibrary.ImageJoinOutput.Exists);
                 Assert.AreEqual(3, result.Duration.Seconds);
-                Assert.AreEqual(images.First().Width, result.Width);
-                Assert.AreEqual(images.First().Height, result.Height);
+                Assert.AreEqual(imageSet.First().Width, result.Width);
+                Assert.AreEqual(imageSet.First().Height, result.Height);
             }
             finally
             {
                 VideoLibrary.ImageJoinOutput.Refresh();
                 if (VideoLibrary.ImageJoinOutput.Exists)
+                {
                     VideoLibrary.ImageJoinOutput.Delete();
+                }
             }
         }
     }

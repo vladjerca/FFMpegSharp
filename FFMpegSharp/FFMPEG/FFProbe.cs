@@ -10,7 +10,7 @@ namespace FFMpegSharp.FFMPEG
     {
         public FFProbe()
         {
-            FfProbeHelper.RootExceptionCheck(ConfiguredRoot);
+            FFProbeHelper.RootExceptionCheck(ConfiguredRoot);
 
             var target = Environment.Is64BitProcess ? "x64" : "x86";
 
@@ -94,7 +94,7 @@ namespace FFMpegSharp.FFMPEG
             info.Size = Math.Round(videoSize + audioSize, 2);
 
             // Get video aspect ratio
-            var cd = FfProbeHelper.Gcd(info.Width, info.Height);
+            var cd = FFProbeHelper.Gcd(info.Width, info.Height);
             info.Ratio = info.Width / cd + ":" + info.Height / cd;
 
             // Get video framerate

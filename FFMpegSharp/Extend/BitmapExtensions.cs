@@ -12,13 +12,8 @@ namespace FFMpegSharp.Extend
             var destination = $"{Environment.TickCount}.png";
 
             poster.Save(destination);
-
-            var success = new FFMpeg().PosterWithAudio(new FileInfo(destination), audio, output);
-
-            if (!success)
-                throw new OperationCanceledException("Could not add audio.");
-
-            return new VideoInfo(output);
+            
+            return new FFMpeg().PosterWithAudio(new FileInfo(destination), audio, output);
         }
     }
 }
