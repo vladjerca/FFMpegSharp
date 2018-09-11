@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using FFMpegSharp.FFMPEG.Enums;
@@ -139,12 +140,12 @@ namespace FFMpegSharp.FFMPEG.Atomic
             return $"-loop {count} ";
         }
 
-        public static string FinalizeAtShortestInput()
+        public static string FinalizeAtShortestInput(bool applicable)
         {
-            return "-shortest ";
+            return applicable ? "-shortest " : string.Empty;
         }
 
-        public static string InputConcat(string[] paths)
+        public static string InputConcat(IEnumerable<string> paths)
         {
             return $"-i \"concat:{string.Join(@"|", paths)}\" ";
         }

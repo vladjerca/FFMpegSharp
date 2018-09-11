@@ -17,7 +17,7 @@ namespace FFMpegSharp.Example
             foreach (var input in args.Select(fileLocation => new VideoInfo(fileLocation)))
             {
                 // Start Encoding
-                encoder.ToMp4(input, new FileInfo(input.FullName.Replace(input.Extension, ".mp4")));
+                encoder.Convert(input, new FileInfo(input.FullName.Replace(input.Extension, ".mp4")));
             }
         }
     }

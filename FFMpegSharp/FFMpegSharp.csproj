@@ -48,13 +48,11 @@
     <Compile Include="Extend\UriExtensions.cs" />
     <Compile Include="FFMPEG\Exceptions\FFMpegException.cs" />
     <Compile Include="ImageInfo.cs" />
-    <Compile Include="VideoInfoExtend.cs" />
     <Compile Include="FFMPEG\Atomic\Arguments.cs" />
     <Compile Include="FFMPEG\Enums\AudioQuality.cs" />
     <Compile Include="FFMPEG\Enums\Codec.cs" />
     <Compile Include="FFMPEG\Enums\Speed.cs" />
     <Compile Include="FFMPEG\Enums\VideoSize.cs" />
-    <Compile Include="FFMPEG\Extend\Extensions.cs" />
     <Compile Include="FFMPEG\FFBase.cs" />
     <Compile Include="FFMPEG\FFMpeg.cs" />
     <Compile Include="FFMPEG\FFProbe.cs" />

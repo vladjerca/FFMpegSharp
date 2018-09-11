@@ -3,6 +3,7 @@ using FFMpegSharp.FFMPEG;
 using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.Tests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
@@ -11,9 +12,7 @@ namespace FFMpegSharp.Tests
     [TestClass]
     public class VideoTest : BaseTest
     {
-        protected FFMpeg _convertor = new FFMpeg();
-
-        public bool Convert(VideoType type, bool multithread = false, VideoSize size = VideoSize.Original)
+        public bool Convert(VideoType type, bool multithreaded = false, VideoSize size = VideoSize.Original)
         {
             var output = Input.OutputLocation(type);
 
@@ -21,7 +20,7 @@ namespace FFMpegSharp.Tests
             {
                 var input = VideoInfo.FromFileInfo(Input);
 
-                input.ConvertTo(type, output, Speed.SuperFast, size, AudioQuality.Ultra, multithread);
+                Encoder.Convert(input, output, type, size: size, multithreaded: multithreaded);
 
                 var outputVideo = new VideoInfo(output.FullName);
 
@@ -106,9 +105,11 @@ namespace FFMpegSharp.Tests
             {
                 var input = VideoInfo.FromFileInfo(Input);
 
-                using (input.Snapshot(output))
+                using (var bitmap = Encoder.Snapshot(input, output))
                 {
-                    Assert.IsTrue(File.Exists(output.FullName));
+                    Assert.AreEqual(input.Width, bitmap.Width);
+                    Assert.AreEqual(input.Height, bitmap.Height);
+                    Assert.AreEqual(bitmap.RawFormat, ImageFormat.Png);
                 }
             }
             finally
@@ -129,13 +130,12 @@ namespace FFMpegSharp.Tests
                 File.Copy(input.FullName, newInput.FullName);
                 var input2 = VideoInfo.FromFileInfo(newInput);
 
-                input.JoinWith(output, false, input2);
-
-                var outputVideo = new VideoInfo(output.FullName);
-
-                Assert.IsTrue(File.Exists(output.FullName) &&
-                              (outputVideo.Duration - input.Duration == input.Duration ||
-                               (outputVideo.Width == input.Width && outputVideo.Height == input.Height)));
+                var result = Encoder.Join(output, input, input2);
+                
+                Assert.IsTrue(File.Exists(output.FullName));
+                Assert.AreEqual(input.Duration.TotalSeconds * 2, result.Duration.TotalSeconds);
+                Assert.AreEqual(input.Height, result.Height);
+                Assert.AreEqual(input.Width, result.Width);
             }
             finally
             {
@@ -156,7 +156,7 @@ namespace FFMpegSharp.Tests
                     .Where(file => file.ToLower().EndsWith(".png"))
                     .Select(file => new ImageInfo(file)).ToArray();
 
-                var result = _convertor.JoinImageSequence(VideoLibrary.ImageJoinOutput, images: images);
+                var result = Encoder.JoinImageSequence(VideoLibrary.ImageJoinOutput, images: images);
 
                 VideoLibrary.ImageJoinOutput.Refresh();
 
