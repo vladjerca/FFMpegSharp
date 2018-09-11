@@ -1,8 +1,8 @@
-﻿using System;
+﻿using FFMpegSharp.FFMPEG.Enums;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using FFMpegSharp.FFMPEG.Enums;
 
 namespace FFMpegSharp.FFMPEG.Atomic
 {
@@ -20,15 +20,17 @@ namespace FFMpegSharp.FFMPEG.Atomic
 
         internal static string Audio(AudioCodec codec, AudioQuality bitrate)
         {
-            return $"-codec:a {codec.ToString().ToLower()} -b:a {(int) bitrate}k -strict experimental ";
+            return $"-codec:a {codec.ToString().ToLower()} -b:a {(int)bitrate}k -strict experimental ";
         }
 
         internal static string Video(VideoCodec codec, int bitrate = 0)
         {
-            var video = $"-codec:v {codec.ToString().ToLower()} ";
+            var video = $"-codec:v {codec.ToString().ToLower()} -pix_fmt yuv420p ";
 
             if (bitrate > 0)
+            {
                 video += $"-b:v {bitrate}k ";
+            }
 
             return video;
         }
@@ -82,7 +84,7 @@ namespace FFMpegSharp.FFMPEG.Atomic
 
         internal static string Scale(VideoSize size, int height)
         {
-            return size == VideoSize.Original ? string.Empty : $"-vf scale={(int) size}:{height} ";
+            return size == VideoSize.Original ? string.Empty : $"-vf scale={(int)size}:{height} ";
         }
 
         internal static string Size(Size? size)
@@ -158,11 +160,6 @@ namespace FFMpegSharp.FFMPEG.Atomic
         internal static string StartNumber(int v)
         {
             return $"-start_number {v} ";
-        }
-
-        internal static string YuvFormat()
-        {
-            return $"-pix_fmt yuv420p ";
         }
     }
 }

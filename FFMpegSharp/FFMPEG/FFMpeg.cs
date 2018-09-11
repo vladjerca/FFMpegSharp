@@ -269,7 +269,6 @@ namespace FFMpegSharp.FFMPEG
                 Arguments.Input($"{firstImage.Directory}\\%09d.png") +
                 Arguments.FrameOutputCount(images.Length) +
                 Arguments.Video(VideoCodec.LibX264) +
-                Arguments.YuvFormat() +
                 Arguments.Output(output);
 
             try
@@ -461,7 +460,7 @@ namespace FFMpegSharp.FFMPEG
             if (e.Data == null)
                 return;
 
-            _errorData = e.Data;
+            _errorData += e.Data;
 #if DEBUG
             Trace.WriteLine(e.Data);
 #endif
