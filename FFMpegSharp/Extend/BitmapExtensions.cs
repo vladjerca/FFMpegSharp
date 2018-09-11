@@ -12,8 +12,20 @@ namespace FFMpegSharp.Extend
             var destination = $"{Environment.TickCount}.png";
 
             poster.Save(destination);
-            
-            return new FFMpeg().PosterWithAudio(new FileInfo(destination), audio, output);
+
+            var tempFile = new FileInfo(destination);
+            try
+            {
+                return new FFMpeg().PosterWithAudio(tempFile, audio, output);
+            }
+            catch(Exception e)
+            {
+                throw;
+            }
+            finally
+            {
+                tempFile.Delete();
+            }
         }
     }
 }
