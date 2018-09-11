@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace FFMpegSharp.FFMPEG.Exceptions
 {
@@ -6,20 +7,18 @@ namespace FFMpegSharp.FFMPEG.Exceptions
     {
         Dependency,
         Conversion,
-        File
+        File,
+        Operation,
+        Process
     }
 
     public class FFMpegException : Exception
     {
-        public FFMpegException(FFMpegExceptionType type)
-        {
-            Type = type;
-        }
+        public FFMpegException(FFMpegExceptionType type): this(type, null, null) { }
 
-        public FFMpegException(FFMpegExceptionType type, string message) : base(message)
-        {
-            Type = type;
-        }
+        public FFMpegException(FFMpegExceptionType type, StringBuilder sb): this(type, sb.ToString(), null) { }
+
+        public FFMpegException(FFMpegExceptionType type, string message): this(type, message, null) { }
 
         public FFMpegException(FFMpegExceptionType type, string message, FFMpegException innerException)
             : base(message, innerException)

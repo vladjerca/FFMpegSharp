@@ -4,7 +4,7 @@ using System.IO;
 
 namespace FFMpegSharp
 {
-    public partial class VideoInfo
+    public class VideoInfo
     {
         private FileInfo _file;
 
@@ -173,6 +173,16 @@ namespace FFMpegSharp
         public void Delete()
         {
             _file.Delete();
+        }
+
+        /// <summary>
+        /// Converts to a file info instance.
+        /// </summary>
+        /// <returns>FileInfo instance.</returns>
+        public FileInfo ToFileInfo()
+        {
+            _file.Refresh();
+            return this._file;
         }
     }
 }

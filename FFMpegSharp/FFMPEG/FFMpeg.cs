@@ -11,6 +11,7 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FFMpegSharp.FFMPEG
@@ -75,7 +76,7 @@ namespace FFMpegSharp.FFMPEG
                 }
             }
 
-            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ConversionExceptionCheck(source.ToFileInfo(), output);
 
             var thumbArgs = Arguments.Input(source) +
                             Arguments.Video(VideoCodec.Png) +
@@ -131,8 +132,9 @@ namespace FFMpegSharp.FFMPEG
             AudioQuality audioQuality = AudioQuality.Normal,
             bool multithreaded = false)
         {
-            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ConversionExceptionCheck(source.ToFileInfo(), output);
             FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.ForType(type));
+            FFMpegHelper.ConversionSizeExceptionCheck(source);
 
             string args = "";
 
@@ -167,14 +169,12 @@ namespace FFMpegSharp.FFMPEG
                     break;
             }
 
-            if (RunProcess(args, output))
+            if (!RunProcess(args, output))
             {
-                return new VideoInfo(output);
+                throw new FFMpegException(FFMpegExceptionType.Conversion, $"The video could not be converted to {Enum.GetName(typeof(VideoType), type)}");
             }
-            else
-            {
-                throw new OperationCanceledException($"The video could not be converted to {Enum.GetName(typeof(VideoType), type)}");
-            }
+
+            return new VideoInfo(output);
         }
 
         /// <summary>
@@ -186,8 +186,9 @@ namespace FFMpegSharp.FFMPEG
         /// <returns></returns>
         public VideoInfo PosterWithAudio(FileInfo image, FileInfo audio, FileInfo output)
         {
-            FFMpegHelper.InputFilesExistExceptionCheck(image, audio);
+            FFMpegHelper.InputsExistExceptionCheck(image, audio);
             FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.Mp4);
+            FFMpegHelper.ConversionSizeExceptionCheck(Image.FromFile(image.FullName));
 
             var args = Arguments.Loop(1) +
                        Arguments.Input(image) +
@@ -199,7 +200,7 @@ namespace FFMpegSharp.FFMPEG
 
             if (!RunProcess(args, output))
             {
-                throw new OperationCanceledException("An error occured while adding the audio file to the image.");
+                throw new FFMpegException(FFMpegExceptionType.Operation, "An error occured while adding the audio file to the image.");
             }
 
             return new VideoInfo(output);
@@ -213,8 +214,12 @@ namespace FFMpegSharp.FFMPEG
         /// <returns>Output video information.</returns>
         public VideoInfo Join(FileInfo output, params VideoInfo[] videos)
         {
+            FFMpegHelper.OutputExistsExceptionCheck(output);
+            FFMpegHelper.InputsExistExceptionCheck(videos.Select(video => video.ToFileInfo()).ToArray());
+
             var temporaryVideoParts = videos.Select(video =>
             {
+                FFMpegHelper.ConversionSizeExceptionCheck(video);
                 var destinationPath = video.FullName.Replace(video.Extension, FileExtension.Ts);
                 Convert(
                    video,
@@ -225,15 +230,15 @@ namespace FFMpegSharp.FFMPEG
             }).ToList();
 
             var args = Arguments.InputConcat(temporaryVideoParts) +
-                                 Arguments.Copy() +
-                                 Arguments.BitStreamFilter(Channel.Audio, Filter.Aac_AdtstoAsc) +
-                                 Arguments.Output(output);
+                Arguments.Copy() +
+                Arguments.BitStreamFilter(Channel.Audio, Filter.Aac_AdtstoAsc) +
+                Arguments.Output(output);
 
             try
             {
                 if (!RunProcess(args, output))
                 {
-                    throw new OperationCanceledException("Could not join the provided video files.");
+                    throw new FFMpegException(FFMpegExceptionType.Operation, "Could not join the provided video files.");
                 }
                 return new VideoInfo(output);
 
@@ -252,9 +257,10 @@ namespace FFMpegSharp.FFMPEG
         /// <param name="images">Image sequence collection</param>
         /// <returns>Output video information.</returns>
         public VideoInfo JoinImageSequence(FileInfo output, double frameRate = 30, params ImageInfo[] images)
-        {
+        {            
             var temporaryImageFiles = images.Select((image, index) =>
             {
+                FFMpegHelper.ConversionSizeExceptionCheck(Image.FromFile(image.FullName));
                 var destinationPath = image.FullName.Replace(image.Name, $"{index.ToString().PadLeft(9, '0')}{image.Extension}");
                 File.Copy(image.FullName, destinationPath);
 
@@ -275,7 +281,7 @@ namespace FFMpegSharp.FFMPEG
             {
                 if (!RunProcess(args, output))
                 {
-                    throw new OperationCanceledException("Could not join the provided image sequence.");
+                    throw new FFMpegException(FFMpegExceptionType.Operation, "Could not join the provided image sequence.");
                 }
 
                 return new VideoInfo(output);
@@ -299,11 +305,11 @@ namespace FFMpegSharp.FFMPEG
             if (uri.Scheme == "http" || uri.Scheme == "https")
             {
                 var args = Arguments.Input(uri) +
-                                     Arguments.Output(output);
+                    Arguments.Output(output);
 
                 if (!RunProcess(args, output))
                 {
-                    throw new OperationCanceledException($"Saving the ${uri.AbsoluteUri} stream failed.");
+                    throw new FFMpegException(FFMpegExceptionType.Operation, $"Saving the ${uri.AbsoluteUri} stream failed.");
                 }
 
                 return new VideoInfo(output);
@@ -319,7 +325,8 @@ namespace FFMpegSharp.FFMPEG
         /// <returns></returns>
         public VideoInfo Mute(VideoInfo source, FileInfo output)
         {
-            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ConversionExceptionCheck(source.ToFileInfo(), output);
+            FFMpegHelper.ConversionSizeExceptionCheck(source);
             FFMpegHelper.ExtensionExceptionCheck(output, source.Extension);
 
             var args = Arguments.Input(source) +
@@ -329,7 +336,7 @@ namespace FFMpegSharp.FFMPEG
 
             if (!RunProcess(args, output))
             {
-                throw new OperationCanceledException("Could not mute the requested video.");
+                throw new FFMpegException(FFMpegExceptionType.Operation, "Could not mute the requested video.");
             }
 
             return new VideoInfo(output);
@@ -343,7 +350,7 @@ namespace FFMpegSharp.FFMPEG
         /// <returns>Success state.</returns>
         public FileInfo ExtractAudio(VideoInfo source, FileInfo output)
         {
-            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ConversionExceptionCheck(source.ToFileInfo(), output);
             FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.Mp3);
 
             var args = Arguments.Input(source) +
@@ -352,7 +359,7 @@ namespace FFMpegSharp.FFMPEG
 
             if (!RunProcess(args, output))
             {
-                throw new OperationCanceledException("Could not extract the audio from the requested video.");
+                throw new FFMpegException(FFMpegExceptionType.Operation, "Could not extract the audio from the requested video.");
             }
 
             output.Refresh();
@@ -370,8 +377,9 @@ namespace FFMpegSharp.FFMPEG
         /// <returns>Success state</returns>
         public VideoInfo ReplaceAudio(VideoInfo source, FileInfo audio, FileInfo output, bool stopAtShortest = false)
         {
-            FFMpegHelper.ConversionExceptionCheck(source, output);
-            FFMpegHelper.InputFilesExistExceptionCheck(audio);
+            FFMpegHelper.ConversionExceptionCheck(source.ToFileInfo(), output);
+            FFMpegHelper.InputsExistExceptionCheck(audio);
+            FFMpegHelper.ConversionSizeExceptionCheck(source);
             FFMpegHelper.ExtensionExceptionCheck(output, source.Extension);
 
             var args = Arguments.Input(source) +
@@ -383,7 +391,7 @@ namespace FFMpegSharp.FFMPEG
 
             if (!RunProcess(args, output))
             {
-                throw new OperationCanceledException("Could not replace the video audio.");
+                throw new FFMpegException(FFMpegExceptionType.Operation, "Could not replace the video audio.");
             }
 
             return new VideoInfo(output);
@@ -405,7 +413,7 @@ namespace FFMpegSharp.FFMPEG
         private readonly string _ffmpegPath;
         private TimeSpan _totalTime;
 
-        private volatile string _errorData = string.Empty;
+        private volatile StringBuilder _errorOutput = new StringBuilder();
 
         private bool RunProcess(string args, FileInfo output)
         {
@@ -433,12 +441,12 @@ namespace FFMpegSharp.FFMPEG
                     {
                         if (file.Length == 0)
                         {
-                            throw new FFMpegException(FFMpegExceptionType.Conversion, _errorData);
+                            throw new FFMpegException(FFMpegExceptionType.Process, _errorOutput);
                         }
                     }
                 else
                 {
-                    throw new FFMpegException(FFMpegExceptionType.Conversion, _errorData);
+                    throw new FFMpegException(FFMpegExceptionType.Process, _errorOutput);
                 }
             }
             return successState;
@@ -460,7 +468,7 @@ namespace FFMpegSharp.FFMPEG
             if (e.Data == null)
                 return;
 
-            _errorData += e.Data;
+            _errorOutput.AppendLine(e.Data);
 #if DEBUG
             Trace.WriteLine(e.Data);
 #endif
