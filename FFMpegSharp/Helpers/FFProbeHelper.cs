@@ -4,7 +4,7 @@ using FFMpegSharp.FFMPEG.Exceptions;
 
 namespace FFMpegSharp.Helpers
 {
-    public class FfProbeHelper
+    public class FFProbeHelper
     {
         public static int Gcd(int first, int second)
         {

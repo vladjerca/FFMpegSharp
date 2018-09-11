@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\FileExtension.cs" />
     <Compile Include="Enums\VideoType.cs" />
     <Compile Include="Extend\BitmapExtensions.cs" />
     <Compile Include="Extend\UriExtensions.cs" />

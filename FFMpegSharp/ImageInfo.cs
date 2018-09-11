@@ -1,4 +1,5 @@
-﻿using FFMpegSharp.FFMPEG;
+﻿using FFMpegSharp.Enums;
+using FFMpegSharp.FFMPEG;
 using FFMpegSharp.Helpers;
 using System;
 using System.Drawing;
@@ -16,7 +17,7 @@ namespace FFMpegSharp
 
         public ImageInfo(FileInfo fileInfo)
         {
-            if (!fileInfo.Extension.ToLower().EndsWith(".png"))
+            if (!fileInfo.Extension.ToLower().EndsWith(FileExtension.Png))
             {
                 throw new Exception("Image joining currently suppors only .png file types");
             }
@@ -29,7 +30,7 @@ namespace FFMpegSharp
             {
                 this.Width = image.Width;
                 this.Height = image.Height;
-                var cd = FfProbeHelper.Gcd(this.Width, this.Height);
+                var cd = FFProbeHelper.Gcd(this.Width, this.Height);
                 this.Ratio = $"{this.Width / cd}:{this.Height / cd}";
             }
 

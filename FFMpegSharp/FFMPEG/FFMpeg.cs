@@ -1,4 +1,5 @@
-﻿using FFMpegSharp.FFMPEG.Atomic;
+﻿using FFMpegSharp.Enums;
+using FFMpegSharp.FFMPEG.Atomic;
 using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.FFMPEG.Exceptions;
 using FFMpegSharp.Helpers;
@@ -20,8 +21,8 @@ namespace FFMpegSharp.FFMPEG
         /// </summary>
         public FFMpeg()
         {
-            FfMpegHelper.RootExceptionCheck(ConfiguredRoot);
-            FfProbeHelper.RootExceptionCheck(ConfiguredRoot);
+            FFMpegHelper.RootExceptionCheck(ConfiguredRoot);
+            FFProbeHelper.RootExceptionCheck(ConfiguredRoot);
 
             var target = Environment.Is64BitProcess ? "x64" : "x86";
 
@@ -46,8 +47,8 @@ namespace FFMpegSharp.FFMPEG
             if (captureTime == null)
                 captureTime = TimeSpan.FromSeconds(source.Duration.TotalSeconds / 3);
 
-            if (output.Extension.ToLower() != FfMpegHelper.Extensions.Png)
-                output = new FileInfo(output.FullName.Replace(output.Extension, FfMpegHelper.Extensions.Png));
+            if (output.Extension.ToLower() != FileExtension.Png)
+                output = new FileInfo(output.FullName.Replace(output.Extension, FileExtension.Png));
 
             if (size == null || (size.Value.Height == 0 && size.Value.Width == 0))
             {
@@ -71,7 +72,7 @@ namespace FFMpegSharp.FFMPEG
                 }
             }
 
-            FfMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ConversionExceptionCheck(source, output);
 
             var thumbArgs = Arguments.Input(source) +
                             Arguments.Video(VideoCodec.Png) +
@@ -98,8 +99,8 @@ namespace FFMpegSharp.FFMPEG
         {
             _totalTime = source.Duration;
 
-            FfMpegHelper.ConversionExceptionCheck(source, output);
-            FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.Mp4);
+            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.Mp4);
 
             var newHeight = source.Height * (source.Width / (int)size);
 
@@ -127,8 +128,8 @@ namespace FFMpegSharp.FFMPEG
         {
             _totalTime = source.Duration;
 
-            FfMpegHelper.ConversionExceptionCheck(source, output);
-            FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.WebM);
+            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.WebM);
 
             var newHeight = source.Height * (source.Width / (int)size);
 
@@ -156,8 +157,8 @@ namespace FFMpegSharp.FFMPEG
         {
             _totalTime = source.Duration;
 
-            FfMpegHelper.ConversionExceptionCheck(source, output);
-            FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.Ogv);
+            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.Ogv);
 
             var newHeight = source.Height * (source.Width / (int)size);
 
@@ -182,8 +183,8 @@ namespace FFMpegSharp.FFMPEG
         {
             _totalTime = source.Duration;
 
-            FfMpegHelper.ConversionExceptionCheck(source, output);
-            FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.Ts);
+            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.Ts);
 
             var conversionArgs = Arguments.Input(source) +
                                  Arguments.Copy() +
@@ -203,8 +204,8 @@ namespace FFMpegSharp.FFMPEG
         /// <returns></returns>
         public bool PosterWithAudio(FileInfo image, FileInfo audio, FileInfo output)
         {
-            FfMpegHelper.InputFilesExistExceptionCheck(image, audio);
-            FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.Mp4);
+            FFMpegHelper.InputFilesExistExceptionCheck(image, audio);
+            FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.Mp4);
 
             var args = Arguments.Loop(1) +
                        Arguments.Input(image) +
@@ -229,9 +230,9 @@ namespace FFMpegSharp.FFMPEG
 
             for (var i = 0; i < pathList.Length; i++)
             {
-                pathList[i] = videos[i].FullName.Replace(videos[i].Extension, FfMpegHelper.Extensions.Ts);
+                pathList[i] = videos[i].FullName.Replace(videos[i].Extension, FileExtension.Ts);
                 ToTs(videos[i],
-                    new FileInfo(videos[i].FullName.Replace(FfMpegHelper.Extensions.Mp4, FfMpegHelper.Extensions.Ts)));
+                    new FileInfo(videos[i].FullName.Replace(FileExtension.Mp4, FileExtension.Ts)));
             }
 
             var conversionArgs = Arguments.InputConcat(pathList) +
@@ -292,7 +293,7 @@ namespace FFMpegSharp.FFMPEG
         /// <returns>Success state.</returns>
         public bool SaveM3U8Stream(Uri uri, FileInfo output)
         {
-            FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.Mp4);
+            FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.Mp4);
 
             if (uri.Scheme == "http" || uri.Scheme == "https")
             {
@@ -312,8 +313,8 @@ namespace FFMpegSharp.FFMPEG
         /// <returns></returns>
         public bool Mute(VideoInfo source, FileInfo output)
         {
-            FfMpegHelper.ConversionExceptionCheck(source, output);
-            FfMpegHelper.ExtensionExceptionCheck(output, source.Extension);
+            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ExtensionExceptionCheck(output, source.Extension);
 
             var args = Arguments.Input(source) +
                        Arguments.Copy() +
@@ -331,8 +332,8 @@ namespace FFMpegSharp.FFMPEG
         /// <returns>Success state.</returns>
         public bool ExtractAudio(VideoInfo source, FileInfo output)
         {
-            FfMpegHelper.ConversionExceptionCheck(source, output);
-            FfMpegHelper.ExtensionExceptionCheck(output, FfMpegHelper.Extensions.Mp3);
+            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.Mp3);
 
             var args = Arguments.Input(source) +
                        Arguments.Disable(Channel.Video) +
@@ -351,9 +352,9 @@ namespace FFMpegSharp.FFMPEG
         /// <returns>Success state</returns>
         public bool ReplaceAudio(VideoInfo source, FileInfo audio, FileInfo output, bool stopAtShortest = false)
         {
-            FfMpegHelper.ConversionExceptionCheck(source, output);
-            FfMpegHelper.InputFilesExistExceptionCheck(audio);
-            FfMpegHelper.ExtensionExceptionCheck(output, source.Extension);
+            FFMpegHelper.ConversionExceptionCheck(source, output);
+            FFMpegHelper.InputFilesExistExceptionCheck(audio);
+            FFMpegHelper.ExtensionExceptionCheck(output, source.Extension);
 
             var args = Arguments.Input(source) +
                        Arguments.Input(audio) +
