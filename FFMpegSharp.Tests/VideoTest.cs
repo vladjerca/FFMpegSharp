@@ -3,6 +3,7 @@ using FFMpegSharp.FFMPEG;
 using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.Tests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -152,24 +153,34 @@ namespace FFMpegSharp.Tests
         {
             try
             {
-                var images = Directory.EnumerateFiles(VideoLibrary.ImageDirectory.FullName)
+                var imageSet = new List<ImageInfo>();
+                Directory.EnumerateFiles(VideoLibrary.ImageDirectory.FullName)
                     .Where(file => file.ToLower().EndsWith(".png"))
-                    .Select(file => new ImageInfo(file)).ToArray();
+                    .ToList()
+                    .ForEach(file =>
+                    {
+                        for (int i = 0; i < 15; i++)
+                        {
+                            imageSet.Add(new ImageInfo(file));
+                        }
+                    });
 
-                var result = Encoder.JoinImageSequence(VideoLibrary.ImageJoinOutput, images: images);
+                var result = Encoder.JoinImageSequence(VideoLibrary.ImageJoinOutput, images: imageSet.ToArray());
 
                 VideoLibrary.ImageJoinOutput.Refresh();
 
                 Assert.IsTrue(VideoLibrary.ImageJoinOutput.Exists);
                 Assert.AreEqual(3, result.Duration.Seconds);
-                Assert.AreEqual(images.First().Width, result.Width);
-                Assert.AreEqual(images.First().Height, result.Height);
+                Assert.AreEqual(imageSet.First().Width, result.Width);
+                Assert.AreEqual(imageSet.First().Height, result.Height);
             }
             finally
             {
                 VideoLibrary.ImageJoinOutput.Refresh();
                 if (VideoLibrary.ImageJoinOutput.Exists)
+                {
                     VideoLibrary.ImageJoinOutput.Delete();
+                }
             }
         }
     }
