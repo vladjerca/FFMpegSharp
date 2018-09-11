@@ -1,4 +1,5 @@
 ﻿using FFMpegSharp.Enums;
+using FFMpegSharp.FFMPEG;
 using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.Tests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,6 +11,8 @@ namespace FFMpegSharp.Tests
     [TestClass]
     public class VideoTest : BaseTest
     {
+        private FFMpeg _convertor = new FFMpeg();
+
         public bool Convert(VideoType type, bool multithread = false, VideoSize size = VideoSize.Original)
         {
             var output = Input.OutputLocation(type);
@@ -153,7 +156,7 @@ namespace FFMpegSharp.Tests
                     .Where(file => file.ToLower().EndsWith(".png"))
                     .Select(file => new ImageInfo(file)).ToArray();
 
-                var result = images.First().JoinWith(VideoLibrary.ImageJoinOutput, images: images.Skip(1).ToArray());
+                var result = _convertor.JoinImageSequence(VideoLibrary.ImageJoinOutput, images: images);
 
                 VideoLibrary.ImageJoinOutput.Refresh();
 

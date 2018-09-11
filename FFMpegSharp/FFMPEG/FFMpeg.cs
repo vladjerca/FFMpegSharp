@@ -246,13 +246,11 @@ namespace FFMpegSharp.FFMPEG
             }
             finally
             {
-                foreach (var path in pathList)
-                    if (File.Exists(path))
-                        File.Delete(path);
+                Cleanup(pathList);
             }
         }
 
-        public bool JoinImageSequence(FileInfo output, double frameRate = 30, params ImageInfo[] images)
+        public VideoInfo JoinImageSequence(FileInfo output, double frameRate = 30, params ImageInfo[] images)
         {
             var pathList = new string[images.Length];
 
@@ -275,13 +273,20 @@ namespace FFMpegSharp.FFMPEG
                 Arguments.Output(output);
             try
             {
-                return RunProcess(conversionArgs, output);
+                var result = RunProcess(conversionArgs, output);
+
+                if (result)
+                {
+                    return new VideoInfo(output);
+                }
+                else
+                {
+                    throw new OperationCanceledException("Could not join the provided image sequence.");
+                }
             }
             finally
             {
-                foreach (var path in pathList)
-                    if (File.Exists(path))
-                        File.Delete(path);
+                Cleanup(pathList);
             }
         }
 
@@ -419,6 +424,17 @@ namespace FFMpegSharp.FFMPEG
                 }
             }
             return successState;
+        }
+
+        private void Cleanup(string[] pathList)
+        {
+            foreach (var path in pathList)
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
         }
 
         private void OutputData(object sender, DataReceivedEventArgs e)
