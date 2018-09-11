@@ -72,9 +72,7 @@ namespace FFMpegSharp.Tests
 
             try
             {
-                var result = new Bitmap(VideoLibrary.LocalCover.FullName)
-                    .AddAudio(VideoLibrary.LocalAudio, output);
-
+                var result = Encoder.PosterWithAudio(new FileInfo(VideoLibrary.LocalCover.FullName), VideoLibrary.LocalAudio, output);
                 Assert.IsTrue(result.Duration.TotalSeconds > 0);
                 Assert.IsTrue(result.Exists);
             }
