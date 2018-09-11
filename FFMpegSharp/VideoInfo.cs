@@ -9,7 +9,7 @@ namespace FFMpegSharp
         private FileInfo _file;
 
         /// <summary>
-        ///     Create a video information object from a file information object.
+        /// Create a video information object from a file information object.
         /// </summary>
         /// <param name="fileInfo">Video file information.</param>
         public VideoInfo(FileInfo fileInfo)
@@ -25,7 +25,7 @@ namespace FFMpegSharp
         }
 
         /// <summary>
-        ///     Create a video information object from a target path.
+        /// Create a video information object from a target path.
         /// </summary>
         /// <param name="path">Path to video.</param>
         public VideoInfo(string path) : this(new FileInfo(path))
@@ -33,82 +33,82 @@ namespace FFMpegSharp
         }
 
         /// <summary>
-        ///     Duration of the video file.
+        /// Duration of the video file.
         /// </summary>
         public TimeSpan Duration { get; internal set; }
 
         /// <summary>
-        ///     Audio format of the video file.
+        /// Audio format of the video file.
         /// </summary>
         public string AudioFormat { get; internal set; }
 
         /// <summary>
-        ///     Video format of the video file.
+        /// Video format of the video file.
         /// </summary>
         public string VideoFormat { get; internal set; }
 
         /// <summary>
-        ///     Aspect ratio.
+        /// Aspect ratio.
         /// </summary>
         public string Ratio { get; internal set; }
 
         /// <summary>
-        ///     Video frame rate.
+        /// Video frame rate.
         /// </summary>
         public double FrameRate { get; internal set; }
 
         /// <summary>
-        ///     Height of the video file.
+        /// Height of the video file.
         /// </summary>
         public int Height { get; internal set; }
 
         /// <summary>
-        ///     Width of the video file.
+        /// Width of the video file.
         /// </summary>
         public int Width { get; internal set; }
 
         /// <summary>
-        ///     Video file size in MegaBytes (MB).
+        /// Video file size in MegaBytes (MB).
         /// </summary>
         public double Size { get; internal set; }
 
         /// <summary>
-        ///     Gets the name of the file.
+        /// Gets the name of the file.
         /// </summary>
         public string Name => _file.Name;
 
         /// <summary>
-        ///     Gets the full path of the file.
+        /// Gets the full path of the file.
         /// </summary>
         public string FullName => _file.FullName;
 
         /// <summary>
-        ///     Gets the file extension.
+        /// Gets the file extension.
         /// </summary>
         public string Extension => _file.Extension;
 
         /// <summary>
-        ///     Gets a flag indicating if the file is read-only.
+        /// Gets a flag indicating if the file is read-only.
         /// </summary>
         public bool IsReadOnly => _file.IsReadOnly;
 
         /// <summary>
-        ///     Gets a flag indicating if the file exists (no cache, per call verification).
+        /// Gets a flag indicating if the file exists (no cache, per call verification).
         /// </summary>
         public bool Exists => File.Exists(FullName);
 
         /// <summary>
-        ///     Gets the creation date.
+        /// Gets the creation date.
         /// </summary>
         public DateTime CreationTime => _file.CreationTime;
 
         /// <summary>
-        ///     Gets the parent directory information.
+        /// Gets the parent directory information.
         /// </summary>
         public DirectoryInfo Directory => _file.Directory;
 
         /// <summary>
-        ///     Create a video information object from a file information object.
+        /// Create a video information object from a file information object.
         /// </summary>
         /// <param name="fileInfo">Video file information.</param>
         /// <returns></returns>
@@ -118,7 +118,7 @@ namespace FFMpegSharp
         }
 
         /// <summary>
-        ///     Create a video information object from a target path.
+        ///  Create a video information object from a target path.
         /// </summary>
         /// <param name="path">Path to video.</param>
         /// <returns></returns>
@@ -128,7 +128,7 @@ namespace FFMpegSharp
         }
 
         /// <summary>
-        ///     Pretty prints the video information.
+        ///  Pretty prints the video information.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
@@ -147,7 +147,7 @@ namespace FFMpegSharp
         }
 
         /// <summary>
-        ///     Open a file stream.
+        /// Open a file stream.
         /// </summary>
         /// <param name="mode">Opens a file in a specified mode.</param>
         /// <returns>File stream of the video file.</returns>
@@ -157,7 +157,7 @@ namespace FFMpegSharp
         }
 
         /// <summary>
-        ///     Move file to a specific directory.
+        /// Move file to a specific directory.
         /// </summary>
         /// <param name="destination"></param>
         public void MoveTo(DirectoryInfo destination)
@@ -168,7 +168,7 @@ namespace FFMpegSharp
         }
 
         /// <summary>
-        ///     Delete the file.
+        ///  Delete the file.
         /// </summary>
         public void Delete()
         {
@@ -176,13 +176,12 @@ namespace FFMpegSharp
         }
 
         /// <summary>
-        /// Converts to a file info instance.
+        /// Converts video info to file info.
         /// </summary>
-        /// <returns>FileInfo instance.</returns>
+        /// <returns>FileInfo</returns>
         public FileInfo ToFileInfo()
         {
-            _file.Refresh();
-            return this._file;
+            return new FileInfo(_file.FullName);
         }
     }
 }
