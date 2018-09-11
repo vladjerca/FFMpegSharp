@@ -11,7 +11,7 @@ namespace FFMpegSharp.Tests
     [TestClass]
     public class VideoTest : BaseTest
     {
-        private FFMpeg _convertor = new FFMpeg();
+        protected FFMpeg _convertor = new FFMpeg();
 
         public bool Convert(VideoType type, bool multithread = false, VideoSize size = VideoSize.Original)
         {
