@@ -1,9 +1,18 @@
-# FFMpegSharp
-![FFMpeg Sharp](https://media.licdn.com/mpr/mpr/jc/AAEAAQAAAAAAAAL-AAAAJDEyYTdkMjAyLTc2M2ItNDM2YS1iOTc5LTAwZTU1YWM0NjdiNQ.jpg)
+![FFMpeg Sharp](https://media.licdn.com/media/gcrc/dms/image/C5612AQFDCKxnyQ3tmw/article-cover_image-shrink_600_2000/0?e=1542844800&v=beta&t=ntfxKUaio7wjO2VFRL4o7gyoIPNKT95SPt94etMFuzw)
 
-FFMpegSharp is a great way to use FFMpeg encoding when writing video applications, client-side and server-side. It has wrapper methods that allow conversion to all web formats: MP4, OGV, TS and methods of capturing screens from the videos. 
+# FFMpegSharp [![NuGet Badge](https://buildstats.info/nuget/FFMpegSharp)](https://www.nuget.org/packages/FFMpegSharp/)
 
-### Getting started
+## Setup
+
+#### NuGet:
+
+```
+Install-Package FFMpegSharp
+```
+
+FFMpegSharp is a great way to use FFMpeg encoding when writing video applications, client-side and server-side. It has wrapper methods that allow conversion to all web formats: MP4, OGV, TS and methods of capturing screens from the videos.
+
+## Getting started
 
 Setup your app config (ffmpeg files can be found in the 'Resources' folder):
 
@@ -64,7 +73,7 @@ static void Main(string[] args)
     encoder.Convert(
         video,
         outputFile,
-        VideoType.Mp4, 
+        VideoType.Mp4,
         Speed.UltraFast,
         VideoSize.Original,
         AudioQuality.Hd,
@@ -100,9 +109,9 @@ static void Main(string[] args)
 
     new FFMpeg()
         .Snapshot(
-            video, 
-            output, 
-            new Size(200, 400), 
+            video,
+            output,
+            new Size(200, 400),
             TimeSpan.FromMinutes(1)
         );
 }
@@ -123,7 +132,7 @@ static void Main(string[] args)
 }
 ```
 
-Join image sequences: 
+Join image sequences:
 ```csharp
 static void Main(string[] args)
 {
@@ -163,7 +172,7 @@ static void Main(string[] args)
 
     new FFMpeg()
         .ExtractAudio(
-            VideoInfo.FromPath(inputVideoFile), 
+            VideoInfo.FromPath(inputVideoFile),
             new FileInfo(outputAudioFile)
         );
 }
@@ -181,8 +190,8 @@ static void Main(string[] args)
 
     new FFMpeg()
         .ReplaceAudio(
-            VideoInfo.FromPath(inputVideoFile), 
-            new FileInfo(inputAudioFile), 
+            VideoInfo.FromPath(inputVideoFile),
+            new FileInfo(inputAudioFile),
             new FileInfo(outputVideoFile)
         );
 }
@@ -200,7 +209,7 @@ static void Main(string[] args)
 
     ((Bitmap)Image.FromFile(inputImageFile))
         .AddAudio(
-            new FileInfo(inputAudioFile), 
+            new FileInfo(inputAudioFile),
             new FileInfo(outputVideoFile)
         );
 

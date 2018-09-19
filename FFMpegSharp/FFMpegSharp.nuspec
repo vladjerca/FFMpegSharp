@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Vlad Jerca</authors>
+    <owners>Vlad Jerca</owners>
+    <projectUrl>https://github.com/vladjerca/FFMpegSharp</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>
+      Initial Nuget Release:
+
+      API Documentation: https://github.com/vladjerca/FFMpegSharp/blob/master/README.md
+    </releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>ffmpeg video conversion ffmpegsharp mp4 ogv</tags>
+  </metadata>
+</package>
