@@ -1,5 +1,5 @@
 ﻿using FFMpegSharp.Enums;
-using FFMpegSharp.FFMPEG.Atomic;
+using FFMpegSharp.FFMPEG.Arguments;
 using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.FFMPEG.Exceptions;
 using FFMpegSharp.Helpers;
@@ -20,10 +20,24 @@ namespace FFMpegSharp.FFMPEG
 
     public class FFMpeg : FFBase
     {
+        IArgumentBuilder argumentBuilder { get; set; }
+
         /// <summary>
         ///     Intializes the FFMPEG encoder.
         /// </summary>
         public FFMpeg()
+        {
+            _Init();
+            argumentBuilder = new FFArgumentBuilder();
+        }
+
+        public FFMpeg(IArgumentBuilder builder)
+        {
+            _Init();
+            argumentBuilder = builder;
+        }
+
+        private void _Init()
         {
             FFMpegHelper.RootExceptionCheck(ConfiguredRoot);
             FFProbeHelper.RootExceptionCheck(ConfiguredRoot);
@@ -78,12 +92,12 @@ namespace FFMpegSharp.FFMPEG
 
             FFMpegHelper.ConversionExceptionCheck(source.ToFileInfo(), output);
 
-            var thumbArgs = Arguments.Input(source) +
-                            Arguments.Video(VideoCodec.Png) +
-                            Arguments.FrameOutputCount(1) +
-                            Arguments.Seek(captureTime) +
-                            Arguments.Size(size) +
-                            Arguments.Output(output);
+            var thumbArgs = ArgumentsStringifier.Input(source) +
+                            ArgumentsStringifier.Video(VideoCodec.Png) +
+                            ArgumentsStringifier.FrameOutputCount(1) +
+                            ArgumentsStringifier.Seek(captureTime) +
+                            ArgumentsStringifier.Size(size) +
+                            ArgumentsStringifier.Output(output);
 
             if (!RunProcess(thumbArgs, output))
             {
@@ -143,29 +157,29 @@ namespace FFMpegSharp.FFMPEG
             switch (type)
             {
                 case VideoType.Mp4:
-                    args = Arguments.Input(source) +
-                                 Arguments.Threads(multithreaded) +
-                                 Arguments.Scale(size, height) +
-                                 Arguments.Video(VideoCodec.LibX264, 2400) +
-                                 Arguments.Speed(speed) +
-                                 Arguments.Audio(AudioCodec.Aac, audioQuality) +
-                                 Arguments.Output(output);
+                    args = ArgumentsStringifier.Input(source) +
+                                 ArgumentsStringifier.Threads(multithreaded) +
+                                 ArgumentsStringifier.Scale(size, height) +
+                                 ArgumentsStringifier.Video(VideoCodec.LibX264, 2400) +
+                                 ArgumentsStringifier.Speed(speed) +
+                                 ArgumentsStringifier.Audio(AudioCodec.Aac, audioQuality) +
+                                 ArgumentsStringifier.Output(output);
                     break;
                 case VideoType.Ogv:
-                    args = Arguments.Input(source) +
-                                 Arguments.Threads(multithreaded) +
-                                 Arguments.Scale(size, height) +
-                                 Arguments.Video(VideoCodec.LibTheora, 2400) +
-                                 Arguments.Speed(16) +
-                                 Arguments.Audio(AudioCodec.LibVorbis, audioQuality) +
-                                 Arguments.Output(output);
+                    args = ArgumentsStringifier.Input(source) +
+                                 ArgumentsStringifier.Threads(multithreaded) +
+                                 ArgumentsStringifier.Scale(size, height) +
+                                 ArgumentsStringifier.Video(VideoCodec.LibTheora, 2400) +
+                                 ArgumentsStringifier.Speed(16) +
+                                 ArgumentsStringifier.Audio(AudioCodec.LibVorbis, audioQuality) +
+                                 ArgumentsStringifier.Output(output);
                     break;
                 case VideoType.Ts:
-                    args = Arguments.Input(source) +
-                                 Arguments.Copy() +
-                                 Arguments.BitStreamFilter(Channel.Video, Filter.H264_Mp4ToAnnexB) +
-                                 Arguments.ForceFormat(VideoCodec.MpegTs) +
-                                 Arguments.Output(output);
+                    args = ArgumentsStringifier.Input(source) +
+                                 ArgumentsStringifier.Copy() +
+                                 ArgumentsStringifier.BitStreamFilter(Channel.Video, Filter.H264_Mp4ToAnnexB) +
+                                 ArgumentsStringifier.ForceFormat(VideoCodec.MpegTs) +
+                                 ArgumentsStringifier.Output(output);
                     break;
             }
 
@@ -190,13 +204,13 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.Mp4);
             FFMpegHelper.ConversionSizeExceptionCheck(Image.FromFile(image.FullName));
 
-            var args = Arguments.Loop(1) +
-                       Arguments.Input(image) +
-                       Arguments.Input(audio) +
-                       Arguments.Video(VideoCodec.LibX264, 2400) +
-                       Arguments.Audio(AudioCodec.Aac, AudioQuality.Normal) +
-                       Arguments.FinalizeAtShortestInput(true) +
-                       Arguments.Output(output);
+            var args = ArgumentsStringifier.Loop(1) +
+                       ArgumentsStringifier.Input(image) +
+                       ArgumentsStringifier.Input(audio) +
+                       ArgumentsStringifier.Video(VideoCodec.LibX264, 2400) +
+                       ArgumentsStringifier.Audio(AudioCodec.Aac, AudioQuality.Normal) +
+                       ArgumentsStringifier.FinalizeAtShortestInput(true) +
+                       ArgumentsStringifier.Output(output);
 
             if (!RunProcess(args, output))
             {
@@ -229,10 +243,10 @@ namespace FFMpegSharp.FFMPEG
                 return destinationPath;
             }).ToList();
 
-            var args = Arguments.InputConcat(temporaryVideoParts) +
-                Arguments.Copy() +
-                Arguments.BitStreamFilter(Channel.Audio, Filter.Aac_AdtstoAsc) +
-                Arguments.Output(output);
+            var args = ArgumentsStringifier.InputConcat(temporaryVideoParts) +
+                ArgumentsStringifier.Copy() +
+                ArgumentsStringifier.BitStreamFilter(Channel.Audio, Filter.Aac_AdtstoAsc) +
+                ArgumentsStringifier.Output(output);
 
             try
             {
@@ -269,13 +283,13 @@ namespace FFMpegSharp.FFMPEG
 
             var firstImage = images.First();
 
-            var args = Arguments.FrameRate(frameRate) +
-                Arguments.Size(new Size(firstImage.Width, firstImage.Height)) +
-                Arguments.StartNumber(0) +
-                Arguments.Input($"{firstImage.Directory}\\%09d.png") +
-                Arguments.FrameOutputCount(images.Length) +
-                Arguments.Video(VideoCodec.LibX264) +
-                Arguments.Output(output);
+            var args = ArgumentsStringifier.FrameRate(frameRate) +
+                ArgumentsStringifier.Size(new Size(firstImage.Width, firstImage.Height)) +
+                ArgumentsStringifier.StartNumber(0) +
+                ArgumentsStringifier.Input($"{firstImage.Directory}\\%09d.png") +
+                ArgumentsStringifier.FrameOutputCount(images.Length) +
+                ArgumentsStringifier.Video(VideoCodec.LibX264) +
+                ArgumentsStringifier.Output(output);
 
             try
             {
@@ -304,8 +318,8 @@ namespace FFMpegSharp.FFMPEG
 
             if (uri.Scheme == "http" || uri.Scheme == "https")
             {
-                var args = Arguments.Input(uri) +
-                    Arguments.Output(output);
+                var args = ArgumentsStringifier.Input(uri) +
+                    ArgumentsStringifier.Output(output);
 
                 if (!RunProcess(args, output))
                 {
@@ -329,10 +343,10 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ConversionSizeExceptionCheck(source);
             FFMpegHelper.ExtensionExceptionCheck(output, source.Extension);
 
-            var args = Arguments.Input(source) +
-                       Arguments.Copy() +
-                       Arguments.Disable(Channel.Audio) +
-                       Arguments.Output(output);
+            var args = ArgumentsStringifier.Input(source) +
+                       ArgumentsStringifier.Copy() +
+                       ArgumentsStringifier.Disable(Channel.Audio) +
+                       ArgumentsStringifier.Output(output);
 
             if (!RunProcess(args, output))
             {
@@ -353,9 +367,9 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ConversionExceptionCheck(source.ToFileInfo(), output);
             FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.Mp3);
 
-            var args = Arguments.Input(source) +
-                       Arguments.Disable(Channel.Video) +
-                       Arguments.Output(output);
+            var args = ArgumentsStringifier.Input(source) +
+                       ArgumentsStringifier.Disable(Channel.Video) +
+                       ArgumentsStringifier.Output(output);
 
             if (!RunProcess(args, output))
             {
@@ -382,12 +396,37 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ConversionSizeExceptionCheck(source);
             FFMpegHelper.ExtensionExceptionCheck(output, source.Extension);
 
-            var args = Arguments.Input(source) +
-                       Arguments.Input(audio) +
-                       Arguments.Copy(Channel.Video) +
-                       Arguments.Audio(AudioCodec.Aac, AudioQuality.Hd) +
-                       Arguments.FinalizeAtShortestInput(stopAtShortest) +
-                       Arguments.Output(output);
+            var args = ArgumentsStringifier.Input(source) +
+                       ArgumentsStringifier.Input(audio) +
+                       ArgumentsStringifier.Copy(Channel.Video) +
+                       ArgumentsStringifier.Audio(AudioCodec.Aac, AudioQuality.Hd) +
+                       ArgumentsStringifier.FinalizeAtShortestInput(stopAtShortest) +
+                       ArgumentsStringifier.Output(output);
+
+            if (!RunProcess(args, output))
+            {
+                throw new FFMpegException(FFMpegExceptionType.Operation, "Could not replace the video audio.");
+            }
+
+            return new VideoInfo(output);
+        }
+
+        public VideoInfo Convert(ArgumentsContainer arguments)
+        {
+            var args = argumentBuilder.BuildArguments(arguments);
+            var output = ((OutputArgument)arguments[ArgumentsFlag.Output]).GetAsFileInfo();
+
+            if (!RunProcess(args, output))
+            {
+                throw new FFMpegException(FFMpegExceptionType.Operation, "Could not replace the video audio.");
+            }
+
+            return new VideoInfo(output);
+        }
+
+        public VideoInfo Convert(ArgumentsContainer arguments, FileInfo input, FileInfo output)
+        {
+            var args = argumentBuilder.BuildArguments(arguments, input, output);
 
             if (!RunProcess(args, output))
             {
@@ -410,7 +449,7 @@ namespace FFMpegSharp.FFMPEG
 
         #region Private Members & Methods
 
-        private readonly string _ffmpegPath;
+        private string _ffmpegPath;
         private TimeSpan _totalTime;
 
         private volatile StringBuilder _errorOutput = new StringBuilder();
@@ -419,7 +458,7 @@ namespace FFMpegSharp.FFMPEG
         {
             var successState = true;
 
-            RunProcess(args, _ffmpegPath, true, rStandardError: true);
+            CreateProcess(args, _ffmpegPath, true, rStandardError: true);
 
             try
             {

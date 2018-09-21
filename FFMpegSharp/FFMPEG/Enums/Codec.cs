@@ -1,6 +1,6 @@
 ﻿namespace FFMpegSharp.FFMPEG.Enums
 {
-    internal enum VideoCodec
+    public enum VideoCodec
     {
         LibX264,
         LibVpx,
@@ -9,19 +9,19 @@
         MpegTs
     }
 
-    internal enum AudioCodec
+    public enum AudioCodec
     {
         Aac,
         LibVorbis
     }
 
-    internal enum Filter
+    public enum Filter
     {
         H264_Mp4ToAnnexB,
         Aac_AdtstoAsc
     }
 
-    internal enum Channel
+    public enum Channel
     {
         Audio,
         Video,

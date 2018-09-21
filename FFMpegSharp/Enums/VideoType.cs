@@ -4,6 +4,7 @@
     {
         Mp4,
         Ogv,
-        Ts
+        Ts,
+        WebM
     }
 }

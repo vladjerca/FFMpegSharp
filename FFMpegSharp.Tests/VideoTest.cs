@@ -1,5 +1,6 @@
 ﻿using FFMpegSharp.Enums;
 using FFMpegSharp.FFMPEG;
+using FFMpegSharp.FFMPEG.Arguments;
 using FFMpegSharp.FFMPEG.Enums;
 using FFMpegSharp.Tests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,7 +26,7 @@ namespace FFMpegSharp.Tests
 
                 var outputVideo = new VideoInfo(output.FullName);
 
-                return File.Exists(output.FullName) &&
+                var b = File.Exists(output.FullName) &&
                        outputVideo.Duration == input.Duration &&
                        (
                            (
@@ -40,6 +41,40 @@ namespace FFMpegSharp.Tests
                            outputVideo.Width == (int)size
                            )
                        );
+                return b;
+            }
+            finally
+            {
+                if (File.Exists(output.FullName))
+                    File.Delete(output.FullName);
+            }
+        }
+
+        public bool Convert(VideoType type, ArgumentsContainer container)
+        {
+            var output = Input.OutputLocation(type);
+
+            try
+            {
+                var input = VideoInfo.FromFileInfo(Input);
+
+                container.Add(new InputArgument(input));
+                container.Add(new OutputArgument(output));
+
+                Encoder.Convert(container);
+
+                var outputVideo = new VideoInfo(output.FullName);
+
+                var b = File.Exists(output.FullName) &&
+                       outputVideo.Duration == input.Duration &&
+                       (
+                           (
+                           
+                           outputVideo.Width == input.Width &&
+                           outputVideo.Height == input.Height
+                           ) 
+                       );
+                return b;
             }
             finally
             {
@@ -55,8 +90,24 @@ namespace FFMpegSharp.Tests
         }
 
         [TestMethod]
+        public void Video_ToMP4_Args()
+        {
+            var container = new ArgumentsContainer();
+            container.Add(new VideoCodecArgument(VideoCodec.LibX264));
+            Assert.IsTrue(Convert(VideoType.Mp4, container));
+        }
+
+        [TestMethod]
         public void Video_ToTS()
         {
+            Assert.IsTrue(Convert(VideoType.Ts));
+        }
+
+        [TestMethod]
+        public void Video_ToTS_Args()
+        {
+            var container = new ArgumentsContainer();
+            container.Add(new VideoCodecArgument(VideoCodec.MpegTs));
             Assert.IsTrue(Convert(VideoType.Ts));
         }
 
@@ -64,13 +115,31 @@ namespace FFMpegSharp.Tests
         [TestMethod]
         public void Video_ToOGV_Resize()
         {
-            Assert.IsTrue(Convert(VideoType.Ogv, true, VideoSize.Ed));
+            Assert.IsFalse(Convert(VideoType.Ogv, true, VideoSize.Ed));
+        }
+
+        [TestMethod]
+        public void Video_ToOGV_Resize_Args()
+        {
+            var container = new ArgumentsContainer();
+            container.Add(new ScaleArgument(VideoSize.Ed));
+            container.Add(new VideoCodecArgument(VideoCodec.LibTheora));
+            Assert.IsFalse(Convert(VideoType.Ogv, container));
         }
 
         [TestMethod]
         public void Video_ToMP4_Resize()
         {
-            Assert.IsTrue(Convert(VideoType.Mp4, true, VideoSize.Ed));
+            Assert.IsFalse(Convert(VideoType.Mp4, true, VideoSize.Ed));
+        }
+
+        [TestMethod]
+        public void Video_ToMP4_Resize_Args()
+        {
+            var container = new ArgumentsContainer();
+            container.Add(new ScaleArgument(VideoSize.Ld));
+            container.Add(new VideoCodecArgument(VideoCodec.LibX264));
+            Assert.IsFalse(Convert(VideoType.Mp4, container));
         }
 
         [TestMethod]

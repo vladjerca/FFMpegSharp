@@ -50,7 +50,7 @@ namespace FFMpegSharp.FFMPEG
             Process?.Dispose();
         }
 
-        protected void RunProcess(string args, string processPath, bool rStandardInput = false,
+        protected void CreateProcess(string args, string processPath, bool rStandardInput = false,
             bool rStandardOutput = false, bool rStandardError = false)
         {
             if (IsWorking)
