@@ -37,7 +37,7 @@ namespace FFMpegSharp.Tests
                            size != VideoSize.Original &&
                            outputVideo.Width != input.Width &&
                            outputVideo.Height != input.Height &&
-                           outputVideo.Width == (int)size
+                           outputVideo.Height == (int)size
                            )
                        );
             }

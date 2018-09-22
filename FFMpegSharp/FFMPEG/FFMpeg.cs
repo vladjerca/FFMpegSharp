@@ -137,15 +137,25 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ConversionSizeExceptionCheck(source);
 
             string args = "";
+            
+            var scale = (double)source.Height / (int)size;
 
-            var height = source.Height * (source.Width / (int)size);
+            var outputSize = new Size(
+                        (int)(source.Width / scale),
+                        (int)(source.Height / scale)
+                    );
+
+            if (outputSize.Width % 2 != 0)
+            {
+                outputSize.Width += 1;
+            }
 
             switch (type)
             {
                 case VideoType.Mp4:
                     args = Arguments.Input(source) +
                                  Arguments.Threads(multithreaded) +
-                                 Arguments.Scale(size, height) +
+                                 Arguments.Scale(outputSize) +
                                  Arguments.Video(VideoCodec.LibX264, 2400) +
                                  Arguments.Speed(speed) +
                                  Arguments.Audio(AudioCodec.Aac, audioQuality) +
@@ -154,7 +164,7 @@ namespace FFMpegSharp.FFMPEG
                 case VideoType.Ogv:
                     args = Arguments.Input(source) +
                                  Arguments.Threads(multithreaded) +
-                                 Arguments.Scale(size, height) +
+                                 Arguments.Scale(outputSize) +
                                  Arguments.Video(VideoCodec.LibTheora, 2400) +
                                  Arguments.Speed(16) +
                                  Arguments.Audio(AudioCodec.LibVorbis, audioQuality) +
