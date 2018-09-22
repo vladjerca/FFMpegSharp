@@ -151,31 +151,44 @@ namespace FFMpegSharp.FFMPEG
             FFMpegHelper.ConversionSizeExceptionCheck(source);
 
             string args = "";
+            
+            var scale = VideoSize.Original == size ? 1 : 
+                (double)source.Height / (int)size;
 
-            var height = source.Height * (source.Width / (int)size);
+            var outputSize = new Size(
+                        (int)(source.Width / scale),
+                        (int)(source.Height / scale)
+                    );
+
+            if (outputSize.Width % 2 != 0)
+            {
+                outputSize.Width += 1;
+            }
 
             switch (type)
             {
                 case VideoType.Mp4:
-                    args = ArgumentsStringifier.Input(source) +
+
+                    args =       ArgumentsStringifier.Input(source) +
                                  ArgumentsStringifier.Threads(multithreaded) +
-                                 ArgumentsStringifier.Scale(size, height) +
+                                 ArgumentsStringifier.Scale(outputSize) +
                                  ArgumentsStringifier.Video(VideoCodec.LibX264, 2400) +
                                  ArgumentsStringifier.Speed(speed) +
                                  ArgumentsStringifier.Audio(AudioCodec.Aac, audioQuality) +
                                  ArgumentsStringifier.Output(output);
                     break;
                 case VideoType.Ogv:
-                    args = ArgumentsStringifier.Input(source) +
+                    args =       ArgumentsStringifier.Input(source) +
                                  ArgumentsStringifier.Threads(multithreaded) +
-                                 ArgumentsStringifier.Scale(size, height) +
+                                 ArgumentsStringifier.Scale(outputSize) +
                                  ArgumentsStringifier.Video(VideoCodec.LibTheora, 2400) +
                                  ArgumentsStringifier.Speed(16) +
                                  ArgumentsStringifier.Audio(AudioCodec.LibVorbis, audioQuality) +
                                  ArgumentsStringifier.Output(output);
+
                     break;
                 case VideoType.Ts:
-                    args = ArgumentsStringifier.Input(source) +
+                    args =       ArgumentsStringifier.Input(source) +
                                  ArgumentsStringifier.Copy() +
                                  ArgumentsStringifier.BitStreamFilter(Channel.Video, Filter.H264_Mp4ToAnnexB) +
                                  ArgumentsStringifier.ForceFormat(VideoCodec.MpegTs) +
