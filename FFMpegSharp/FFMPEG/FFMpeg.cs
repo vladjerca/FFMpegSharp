@@ -138,7 +138,8 @@ namespace FFMpegSharp.FFMPEG
 
             string args = "";
             
-            var scale = (double)source.Height / (int)size;
+            var scale = VideoSize.Original == size ? 1 : 
+                (double)source.Height / (int)size;
 
             var outputSize = new Size(
                         (int)(source.Width / scale),
