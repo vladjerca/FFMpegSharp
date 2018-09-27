@@ -194,5 +194,13 @@ namespace FFMpegSharp.Tests
 
             Assert.IsTrue(str == "-i \"input.mp4\" -codec:v libx264 -pix_fmt yuv420p \"output.mp4\"");
         }
+
+        [TestMethod]
+        public void Builder_BuildString_Codec_Override()
+        {
+            var str = GetArgumentsString(new VideoCodecArgument(VideoCodec.LibX264), new OverrideArgument());
+
+            Assert.IsTrue(str == "-i \"input.mp4\" -codec:v libx264 -pix_fmt yuv420p \"output.mp4\" -y");
+        }
     }
 }
