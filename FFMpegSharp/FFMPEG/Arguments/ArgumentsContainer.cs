@@ -93,5 +93,19 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
             return ((IDictionary<Type, Argument>)_args).GetEnumerator();
         }
+
+        public T Find<T>()  where T : Argument
+        {
+            if (ContainsKey(typeof(T)))
+                return (T)_args[typeof(T)];
+            return null;
+        }
+
+        public bool Contains<T>() where T : Argument
+        {
+            if (ContainsKey(typeof(T)))
+                return true;
+            return false;
+        }
     }
 }
