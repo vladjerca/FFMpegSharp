@@ -20,17 +20,21 @@ namespace FFMpegSharp.FFMPEG.Arguments
 
             StringBuilder sb = new StringBuilder();
 
-            sb.Append(GetInput(container).GetStringValue());
+            sb.Append(GetInput(container).GetStringValue().Trim() + " ");
 
             foreach(var a in container)
             {
                 if(!IsInputOrOutput(a.Key))
                 {
-                    sb.Append(a.Value.GetStringValue());
+                    sb.Append(a.Value.GetStringValue().Trim() + " ");
                 }
             }
 
-            sb.Append(container[typeof(OutputArgument)].GetStringValue());
+            sb.Append(container[typeof(OutputArgument)].GetStringValue().Trim());
+
+            var overrideArg = container.Find<OverrideArgument>();
+            if (overrideArg != null)
+                sb.Append(" " + overrideArg.GetStringValue().Trim());
 
             return sb.ToString();
         }
@@ -48,17 +52,21 @@ namespace FFMpegSharp.FFMPEG.Arguments
             var inputA = new InputArgument(input);
             var outputA = new OutputArgument();
 
-            sb.Append(inputA.GetStringValue());
+            sb.Append(inputA.GetStringValue().Trim() + " ");
 
             foreach (var a in container)
             {
                 if (!IsInputOrOutput(a.Key))
                 {
-                    sb.Append(a.Value.GetStringValue());
+                    sb.Append(a.Value.GetStringValue().Trim() + " ");
                 }
             }
 
-            sb.Append(outputA.GetStringValue());
+            sb.Append(outputA.GetStringValue().Trim());
+
+            var overrideArg = container.Find<OverrideArgument>();
+            if (overrideArg != null)
+                sb.Append(" " + overrideArg.GetStringValue().Trim());
 
             return sb.ToString();
         }
@@ -94,7 +102,7 @@ namespace FFMpegSharp.FFMPEG.Arguments
 
         private bool IsInputOrOutput(Type arg)
         {
-            return (arg == typeof(InputArgument)) || (arg == typeof(ConcatArgument)) || (arg == typeof(OutputArgument));
+            return (arg == typeof(InputArgument)) || (arg == typeof(ConcatArgument)) || (arg == typeof(OutputArgument)) || (arg == typeof(OverrideArgument));
         }
     }
 }

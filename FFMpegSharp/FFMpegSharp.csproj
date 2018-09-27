@@ -59,6 +59,7 @@
     <Compile Include="FFMPEG\Arguments\InputArgument.cs" />
     <Compile Include="FFMPEG\Arguments\LoopArgument.cs" />
     <Compile Include="FFMPEG\Arguments\OutputArgument.cs" />
+    <Compile Include="FFMPEG\Arguments\OverrideArgument.cs" />
     <Compile Include="FFMPEG\Arguments\ScaleArgument.cs" />
     <Compile Include="FFMPEG\Arguments\SeekArgument.cs" />
     <Compile Include="FFMPEG\Arguments\ShortestArgument.cs" />
