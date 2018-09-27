@@ -7,27 +7,20 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
-    public class CopyAudioArgument : Argument
+    public class CopyArgument : Argument<Channel>
     {
-        public CopyAudioArgument()
+        public CopyArgument()
+        {
+            Value = Channel.Both;
+        }
+
+        public CopyArgument(Channel value = Channel.Both) : base(value)
         {
         }
 
         public override string GetStringValue()
         {
-            return ArgumentsStringifier.Copy(Channel.Audio);
-        }
-    }
-
-    public class CopyVideoArgument : Argument
-    {
-        public CopyVideoArgument()
-        {
-        }
-
-        public override string GetStringValue()
-        {
-            return ArgumentsStringifier.Copy(Channel.Video);
+            return ArgumentsStringifier.Copy(Value);
         }
     }
 }

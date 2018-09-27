@@ -113,7 +113,9 @@ namespace FFMpegSharp.Tests
         public void Video_ToTS_Args()
         {
             var container = new ArgumentsContainer();
-            container.Add(new VideoCodecArgument(VideoCodec.MpegTs));
+            container.Add(new CopyArgument());
+            container.Add(new BitStreamFilterArgument(Channel.Video, Filter.H264_Mp4ToAnnexB));
+            container.Add(new ForceFormatArgument(VideoCodec.MpegTs));
             Assert.IsTrue(Convert(VideoType.Ts, container));
         }
 
