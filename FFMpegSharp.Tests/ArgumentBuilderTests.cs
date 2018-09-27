@@ -83,11 +83,28 @@ namespace FFMpegSharp.Tests
         }
 
         [TestMethod]
-        public void Builder_BuildString_Copy()
+        public void Builder_BuildString_Copy_Audio()
         {
-            var str = GetArgumentsString(new CopyArgument());
+            var str = GetArgumentsString(new CopyArgument(Channel.Audio));
 
             Assert.IsTrue(str == "-i \"input.mp4\" -c:a copy \"output.mp4\"");
+        }
+
+
+        [TestMethod]
+        public void Builder_BuildString_Copy_Video()
+        {
+            var str = GetArgumentsString(new CopyArgument(Channel.Video));
+
+            Assert.IsTrue(str == "-i \"input.mp4\" -c:v copy \"output.mp4\"");
+        }
+
+        [TestMethod]
+        public void Builder_BuildString_Copy_Both()
+        {
+            var str = GetArgumentsString(new CopyArgument(Channel.Both));
+
+            Assert.IsTrue(str == "-i \"input.mp4\" -c copy \"output.mp4\"");
         }
 
         [TestMethod]
