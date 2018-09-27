@@ -26,7 +26,7 @@ namespace FFMpegSharp.Tests
 
                 var outputVideo = new VideoInfo(output.FullName);
 
-                var b = File.Exists(output.FullName) &&
+                return File.Exists(output.FullName) &&
                        outputVideo.Duration == input.Duration &&
                        (
                            (
@@ -41,7 +41,6 @@ namespace FFMpegSharp.Tests
                            outputVideo.Height == (int)size
                            )
                        );
-                return b;
             }
             finally
             {
@@ -60,21 +59,28 @@ namespace FFMpegSharp.Tests
 
                 container.Add(new InputArgument(input));
                 container.Add(new OutputArgument(output));
+                var scaling = container.Find<ScaleArgument>();
 
                 Encoder.Convert(container);
 
+
                 var outputVideo = new VideoInfo(output.FullName);
 
-                var b = File.Exists(output.FullName) &&
+                return File.Exists(output.FullName) &&
                        outputVideo.Duration == input.Duration &&
                        (
                            (
-                           
+                           scaling == null &&
                            outputVideo.Width == input.Width &&
                            outputVideo.Height == input.Height
-                           ) 
+                           )
+                           ||
+                           (
+                           scaling != null &&
+                           (outputVideo.Width == scaling.Value.Width || scaling.Value.Width == -1)  &&
+                           (outputVideo.Height == scaling.Value.Height || scaling.Value.Height == -1) 
+                           )
                        );
-                return b;
             }
             finally
             {
@@ -108,14 +114,14 @@ namespace FFMpegSharp.Tests
         {
             var container = new ArgumentsContainer();
             container.Add(new VideoCodecArgument(VideoCodec.MpegTs));
-            Assert.IsTrue(Convert(VideoType.Ts));
+            Assert.IsTrue(Convert(VideoType.Ts, container));
         }
 
 
         [TestMethod]
         public void Video_ToOGV_Resize()
         {
-            Assert.IsFalse(Convert(VideoType.Ogv, true, VideoSize.Ed));
+            Assert.IsTrue(Convert(VideoType.Ogv, true, VideoSize.Ed));
         }
 
         [TestMethod]
@@ -124,13 +130,13 @@ namespace FFMpegSharp.Tests
             var container = new ArgumentsContainer();
             container.Add(new ScaleArgument(VideoSize.Ed));
             container.Add(new VideoCodecArgument(VideoCodec.LibTheora));
-            Assert.IsFalse(Convert(VideoType.Ogv, container));
+            Assert.IsTrue(Convert(VideoType.Ogv, container));
         }
 
         [TestMethod]
         public void Video_ToMP4_Resize()
         {
-            Assert.IsFalse(Convert(VideoType.Mp4, true, VideoSize.Ed));
+            Assert.IsTrue(Convert(VideoType.Mp4, true, VideoSize.Ed));
         }
 
         [TestMethod]
@@ -139,7 +145,7 @@ namespace FFMpegSharp.Tests
             var container = new ArgumentsContainer();
             container.Add(new ScaleArgument(VideoSize.Ld));
             container.Add(new VideoCodecArgument(VideoCodec.LibX264));
-            Assert.IsFalse(Convert(VideoType.Mp4, container));
+            Assert.IsTrue(Convert(VideoType.Mp4, container));
         }
 
         [TestMethod]
@@ -201,7 +207,7 @@ namespace FFMpegSharp.Tests
                 var input2 = VideoInfo.FromFileInfo(newInput);
 
                 var result = Encoder.Join(output, input, input2);
-                
+
                 Assert.IsTrue(File.Exists(output.FullName));
                 Assert.AreEqual(input.Duration.TotalSeconds * 2, result.Duration.TotalSeconds);
                 Assert.AreEqual(input.Height, result.Height);
