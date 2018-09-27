@@ -99,9 +99,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FFMPEG\Atomic\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="FFMPEG\bin\presets\ffprobe.xsd">
       <SubType>Designer</SubType>
