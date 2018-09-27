@@ -16,8 +16,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.FrameRate;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.FrameRate(Value);

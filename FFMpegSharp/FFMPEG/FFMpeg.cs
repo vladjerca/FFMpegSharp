@@ -427,7 +427,7 @@ namespace FFMpegSharp.FFMPEG
         public VideoInfo Convert(ArgumentsContainer arguments)
         {
             var args = argumentBuilder.BuildArguments(arguments);
-            var output = ((OutputArgument)arguments[ArgumentsFlag.Output]).GetAsFileInfo();
+            var output = ((OutputArgument)arguments[typeof(OutputArgument)]).GetAsFileInfo();
 
             if (!RunProcess(args, output))
             {

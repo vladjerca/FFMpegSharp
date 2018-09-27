@@ -17,8 +17,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.Speed;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Speed(Value);

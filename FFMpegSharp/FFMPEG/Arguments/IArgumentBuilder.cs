@@ -11,9 +11,7 @@ namespace FFMpegSharp.FFMPEG.Arguments
     public interface IArgumentBuilder
     {
         string BuildArguments(ArgumentsContainer container);
-        string BuildArguments(ArgumentsContainer container, ArgumentsFlag flag);
 
         string BuildArguments(ArgumentsContainer container, FileInfo input, FileInfo output);
-        string BuildArguments(ArgumentsContainer container, FileInfo input, FileInfo output, ArgumentsFlag flag);
     }
 }

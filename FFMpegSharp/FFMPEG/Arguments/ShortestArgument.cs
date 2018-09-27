@@ -16,8 +16,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.Shortest;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.FinalizeAtShortestInput(Value);

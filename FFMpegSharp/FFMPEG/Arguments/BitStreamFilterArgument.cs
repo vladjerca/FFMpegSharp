@@ -17,8 +17,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.BitStreamArgument;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.BitStreamFilter(First, Second);

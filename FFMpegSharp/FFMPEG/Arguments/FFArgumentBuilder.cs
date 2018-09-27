@@ -24,39 +24,17 @@ namespace FFMpegSharp.FFMPEG.Arguments
 
             foreach(var a in container)
             {
-                if(a.Key != ArgumentsFlag.Input && a.Key != ArgumentsFlag.Output && a.Key != ArgumentsFlag.Concat)
+                if(!IsInputOrOutput(a.Key))
                 {
                     sb.Append(a.Value.GetStringValue());
                 }
             }
 
-            sb.Append(container[ArgumentsFlag.Output].GetStringValue());
+            sb.Append(container[typeof(OutputArgument)].GetStringValue());
 
             return sb.ToString();
         }
 
-        public string BuildArguments(ArgumentsContainer container, ArgumentsFlag flag)
-        {
-            if (!container.ContainsInputOutput())
-                throw new ArgumentException("No input or output parameter found", nameof(container));
-
-            CheckContainerException(container);
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append(GetInput(container).GetStringValue());
-
-            foreach (var a in container)
-            {
-                if (a.Key != ArgumentsFlag.Input && a.Key != ArgumentsFlag.Output && flag.HasFlag(a.Key) && a.Key != ArgumentsFlag.Concat)
-                {
-                    sb.Append(a.Value.GetStringValue());
-                }
-            }
-
-            sb.Append(container[ArgumentsFlag.Output].GetStringValue());
-
-            return sb.ToString();
-        }
 
         public string BuildArguments(ArgumentsContainer container, FileInfo input, FileInfo output)
         {
@@ -74,34 +52,7 @@ namespace FFMpegSharp.FFMPEG.Arguments
 
             foreach (var a in container)
             {
-                if (a.Key != ArgumentsFlag.Input && a.Key != ArgumentsFlag.Output && a.Key != ArgumentsFlag.Concat)
-                {
-                    sb.Append(a.Value.GetStringValue());
-                }
-            }
-
-            sb.Append(outputA.GetStringValue());
-
-            return sb.ToString();
-        }
-
-        public string BuildArguments(ArgumentsContainer container, FileInfo input, FileInfo output, ArgumentsFlag flag)
-        {
-            CheckContainerException(container);
-            CheckExtensionOfOutputExtension(container, output);
-            FFMpegHelper.ConversionExceptionCheck(input, output);
-
-
-            StringBuilder sb = new StringBuilder();
-
-            var inputA = new InputArgument(input);
-            var outputA = new OutputArgument();
-
-            sb.Append(inputA.GetStringValue());
-
-            foreach (var a in container)
-            {
-                if (a.Key != ArgumentsFlag.Input && a.Key != ArgumentsFlag.Output && flag.HasFlag(a.Key) && a.Key != ArgumentsFlag.Concat)
+                if (!IsInputOrOutput(a.Key))
                 {
                     sb.Append(a.Value.GetStringValue());
                 }
@@ -114,33 +65,36 @@ namespace FFMpegSharp.FFMPEG.Arguments
 
         private void CheckContainerException(ArgumentsContainer container)
         {
-            //TODO: implement arguments check
-            //foreach(var kv in container)
-            //{
-            //    switch(kv.Value.Flag)
-            //    {
-
-            //    }
-            //}
+            //TODO: implement arguments check            
         }
 
         private void CheckExtensionOfOutputExtension(ArgumentsContainer container, FileInfo output)
         {
-            if(container.ContainsKey(ArgumentsFlag.VideoCodec))
+            if(container.ContainsKey(typeof(VideoCodecArgument)))
             {
-                var codec = (VideoCodecArgument)container[ArgumentsFlag.VideoCodec];
+                var codec = (VideoCodecArgument)container[typeof(VideoCodecArgument)];
                 FFMpegHelper.ExtensionExceptionCheck(output, FileExtension.ForCodec(codec.Value));
             }
         }
 
         public Argument GetInput(ArgumentsContainer container)
         {
-            if (container.ContainsKey(ArgumentsFlag.Input))
-                return container[ArgumentsFlag.Input];
-            else if (container.ContainsKey(ArgumentsFlag.Concat))
-                return container[ArgumentsFlag.Concat];
+            if (container.ContainsKey(typeof(InputArgument)))
+                return container[typeof(InputArgument)];
+            else if (container.ContainsKey(typeof(ConcatArgument)))
+                return container[typeof(ConcatArgument)];
             else
                 throw new ArgumentException("No inputs found");
+        }
+
+        private bool IsInputOrOutput(Argument arg)
+        {
+            return IsInputOrOutput(arg.GetType());
+        }
+
+        private bool IsInputOrOutput(Type arg)
+        {
+            return (arg == typeof(InputArgument)) || (arg == typeof(ConcatArgument)) || (arg == typeof(OutputArgument));
         }
     }
 }

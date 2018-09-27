@@ -27,8 +27,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
             Value = videosize == VideoSize.Original ? new Size(-1, -1) : new Size(-1, (int)videosize);
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.Scale;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Scale(Value);

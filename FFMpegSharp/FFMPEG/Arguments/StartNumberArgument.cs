@@ -16,8 +16,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.StartNumber;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.StartNumber(Value);

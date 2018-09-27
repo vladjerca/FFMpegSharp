@@ -23,8 +23,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.Threads;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Threads(Value);

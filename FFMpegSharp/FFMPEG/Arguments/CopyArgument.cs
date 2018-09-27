@@ -13,8 +13,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.Copy;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Copy(Channel.Audio);
@@ -26,8 +24,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
         public CopyVideoArgument()
         {
         }
-
-        public override ArgumentsFlag Flag => ArgumentsFlag.Copy;
 
         public override string GetStringValue()
         {

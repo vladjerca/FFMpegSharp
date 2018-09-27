@@ -28,9 +28,7 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
             Bitrate = bitrate;
         }
-
-        public override ArgumentsFlag Flag => ArgumentsFlag.AudioCodec;
-
+        
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Audio(Value, Bitrate);

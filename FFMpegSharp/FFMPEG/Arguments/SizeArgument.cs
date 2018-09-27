@@ -26,8 +26,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.Size;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Size(Value);

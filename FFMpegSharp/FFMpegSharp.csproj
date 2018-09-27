@@ -48,7 +48,6 @@
     <Compile Include="Extend\UriExtensions.cs" />
     <Compile Include="FFMPEG\Arguments\Argument.cs" />
     <Compile Include="FFMPEG\Arguments\ArgumentsContainer.cs" />
-    <Compile Include="FFMPEG\Arguments\ArgumentsFlag.cs" />
     <Compile Include="FFMPEG\Arguments\AudioCodecArgument.cs" />
     <Compile Include="FFMPEG\Arguments\BitStreamFilterArgument.cs" />
     <Compile Include="FFMPEG\Arguments\ConcatArgument.cs" />

@@ -7,90 +7,91 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
-    public class ArgumentsContainer : IDictionary<ArgumentsFlag, Argument>
+    public class ArgumentsContainer : IDictionary<Type, Argument>
     {
-        Dictionary<ArgumentsFlag, Argument> _args;
+        Dictionary<Type, Argument> _args;
 
         public ArgumentsContainer()
         {
-            _args = new Dictionary<ArgumentsFlag, Argument>();
+            _args = new Dictionary<Type, Argument>();
         }
 
-        public Argument this[ArgumentsFlag key] { get => ((IDictionary<ArgumentsFlag, Argument>)_args)[key]; set => ((IDictionary<ArgumentsFlag, Argument>)_args)[key] = value; }
+        public Argument this[Type key] { get => ((IDictionary<Type, Argument>)_args)[key]; set => ((IDictionary<Type, Argument>)_args)[key] = value; }
 
-        public ICollection<ArgumentsFlag> Keys => ((IDictionary<ArgumentsFlag, Argument>)_args).Keys;
+        public ICollection<Type> Keys => ((IDictionary<Type, Argument>)_args).Keys;
 
-        public ICollection<Argument> Values => ((IDictionary<ArgumentsFlag, Argument>)_args).Values;
+        public ICollection<Argument> Values => ((IDictionary<Type, Argument>)_args).Values;
 
-        public int Count => ((IDictionary<ArgumentsFlag, Argument>)_args).Count;
+        public int Count => ((IDictionary<Type, Argument>)_args).Count;
 
-        public bool IsReadOnly => ((IDictionary<ArgumentsFlag, Argument>)_args).IsReadOnly;
+        public bool IsReadOnly => ((IDictionary<Type, Argument>)_args).IsReadOnly;
 
-        public void Add(ArgumentsFlag key, Argument value)
+        public void Add(Type key, Argument value)
         {
             throw new InvalidOperationException("Not supported operation");
         }
 
-        public void Add(Argument value)
-        {
-            ((IDictionary<ArgumentsFlag, Argument>)_args).Add(value.Flag, value);
-        }
-
-        public void Add(KeyValuePair<ArgumentsFlag, Argument> item)
+        public void Add(KeyValuePair<Type, Argument> item)
         {
             throw new InvalidOperationException("Not supported operation");
         }
 
         public void Clear()
         {
-            ((IDictionary<ArgumentsFlag, Argument>)_args).Clear();
+            ((IDictionary<Type, Argument>)_args).Clear();
         }
 
-        public bool Contains(KeyValuePair<ArgumentsFlag, Argument> item)
+        public bool Contains(KeyValuePair<Type, Argument> item)
         {
-            return ((IDictionary<ArgumentsFlag, Argument>)_args).Contains(item);
+            return ((IDictionary<Type, Argument>)_args).Contains(item);
         }
 
-        public bool ContainsKey(ArgumentsFlag key)
+
+        public void Add(Argument value)
         {
-            return ((IDictionary<ArgumentsFlag, Argument>)_args).ContainsKey(key);
+            ((IDictionary<Type, Argument>)_args).Add(value.GetType(), value);
+        }        
+
+        public bool ContainsInputOutput()
+        {
+            return  ((ContainsKey(typeof(InputArgument)) && !ContainsKey(typeof(ConcatArgument))) ||
+                    (!ContainsKey(typeof(InputArgument)) && ContainsKey(typeof(ConcatArgument))))
+                    && ContainsKey(typeof(OutputArgument));
         }
 
-        public void CopyTo(KeyValuePair<ArgumentsFlag, Argument>[] array, int arrayIndex)
+        public bool ContainsKey(Type key)
         {
-            ((IDictionary<ArgumentsFlag, Argument>)_args).CopyTo(array, arrayIndex);
+            return ((IDictionary<Type, Argument>)_args).ContainsKey(key);
         }
 
-        public IEnumerator<KeyValuePair<ArgumentsFlag, Argument>> GetEnumerator()
+        public void CopyTo(KeyValuePair<Type, Argument>[] array, int arrayIndex)
         {
-            return ((IDictionary<ArgumentsFlag, Argument>)_args).GetEnumerator();
+            ((IDictionary<Type, Argument>)_args).CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(ArgumentsFlag key)
+        public IEnumerator<KeyValuePair<Type, Argument>> GetEnumerator()
         {
-            return ((IDictionary<ArgumentsFlag, Argument>)_args).Remove(key);
+            return ((IDictionary<Type, Argument>)_args).GetEnumerator();
         }
 
-        public bool Remove(KeyValuePair<ArgumentsFlag, Argument> item)
+        public bool Remove(Type key)
         {
-            return ((IDictionary<ArgumentsFlag, Argument>)_args).Remove(item);
+            return ((IDictionary<Type, Argument>)_args).Remove(key);
         }
 
-        public bool TryGetValue(ArgumentsFlag key, out Argument value)
+        public bool Remove(KeyValuePair<Type, Argument> item)
         {
-            return ((IDictionary<ArgumentsFlag, Argument>)_args).TryGetValue(key, out value);
+            return ((IDictionary<Type, Argument>)_args).Remove(item);
+        }
+
+        public bool TryGetValue(Type key, out Argument value)
+        {
+            return ((IDictionary<Type, Argument>)_args).TryGetValue(key, out value);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IDictionary<ArgumentsFlag, Argument>)_args).GetEnumerator();
-        }
-
-        public bool ContainsInputOutput()
-        {
-            return  ((ContainsKey(ArgumentsFlag.Input) && !ContainsKey(ArgumentsFlag.Concat)) ||
-                    (!ContainsKey(ArgumentsFlag.Input) && ContainsKey(ArgumentsFlag.Concat)))
-                    && ContainsKey(ArgumentsFlag.Output);
+            return ((IDictionary<Type, Argument>)_args).GetEnumerator();
         }
     }
 }

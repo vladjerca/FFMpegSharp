@@ -8,8 +8,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
 {
     public abstract class Argument
     {
-        public abstract ArgumentsFlag Flag { get; }
-
         public abstract string GetStringValue();
 
         public override string ToString()

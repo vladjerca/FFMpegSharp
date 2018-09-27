@@ -9,8 +9,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
 {
     public class ConcatArgument : Argument<IEnumerable<string>>, IEnumerable<string>
     {
-        public override ArgumentsFlag Flag => ArgumentsFlag.Concat;
-
         public ConcatArgument()
         {
             Value = new List<string>();

@@ -24,8 +24,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
             Bitrate = bitrate;
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.VideoCodec;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Video(Value, Bitrate);

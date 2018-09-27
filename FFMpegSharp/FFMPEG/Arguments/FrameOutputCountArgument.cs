@@ -16,8 +16,6 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
-        public override ArgumentsFlag Flag => ArgumentsFlag.FrameOutputCount;
-
         public override string GetStringValue()
         {
             return ArgumentsStringifier.FrameOutputCount(Value);
