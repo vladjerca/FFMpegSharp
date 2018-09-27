@@ -6,8 +6,15 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Abstract class implements basic functionality of ffmpeg arguments
+    /// </summary>
     public abstract class Argument
     {
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public abstract string GetStringValue();
 
         public override string ToString()
@@ -16,9 +23,16 @@ namespace FFMpegSharp.FFMPEG.Arguments
         }
     }
 
+    /// <summary>
+    /// Abstract class implements basic functionality of ffmpeg arguments with one value property
+    /// </summary>
     public abstract class Argument<T> : Argument
     {
         private T _value;
+
+        /// <summary>
+        /// Value type of <see cref="T"/>
+        /// </summary>
         public T Value { get => _value; set { CheckValue(value); _value = value; } }
 
         public Argument() { }
@@ -34,13 +48,23 @@ namespace FFMpegSharp.FFMPEG.Arguments
         }
     }
 
+    /// <summary>
+    /// Abstract class implements basic functionality of ffmpeg arguments with two values properties
+    /// </summary>
     public abstract class Argument<T1, T2> : Argument
     {
 
         private T1 _first;
         private T2 _second;
 
+        /// <summary>
+        /// First value type of <see cref="T"/>
+        /// </summary>
         public T1 First { get => _first; set { CheckFirst(_first); _first = value; } }
+
+        /// <summary>
+        /// Second value type of <see cref="T"/>
+        /// </summary>
         public T2 Second { get => _second; set { CheckSecond(_second); _second = value; } }
 
         public Argument() { }

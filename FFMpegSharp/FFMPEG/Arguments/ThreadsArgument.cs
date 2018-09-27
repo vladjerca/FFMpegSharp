@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Represents threads parameter
+    /// Number of threads used for video encoding
+    /// </summary>
     public class ThreadsArgument : Argument<int>
     {
         public ThreadsArgument()
@@ -23,6 +27,10 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Threads(Value);

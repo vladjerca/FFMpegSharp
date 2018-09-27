@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+
+    /// <summary>
+    /// Represents parameter of concat argument
+    /// Used for creating video from multiple images or videos
+    /// </summary>
     public class ConcatArgument : Argument<IEnumerable<string>>, IEnumerable<string>
     {
         public ConcatArgument()
@@ -23,6 +28,10 @@ namespace FFMpegSharp.FFMPEG.Arguments
             return Value.GetEnumerator();
         }
 
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public override string GetStringValue()
         {
             return ArgumentsStringifier.InputConcat(Value);

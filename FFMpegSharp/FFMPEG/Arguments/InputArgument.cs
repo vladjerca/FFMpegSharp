@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Represents input parameter
+    /// </summary>
     public class InputArgument : Argument<string>
     {
         public InputArgument()
@@ -29,6 +32,10 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Input(Value);

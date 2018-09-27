@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Represents frame output count parameter
+    /// </summary>
     public class FrameOutputCountArgument : Argument<int>
     {
         public FrameOutputCountArgument()
@@ -16,6 +19,10 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public override string GetStringValue()
         {
             return ArgumentsStringifier.FrameOutputCount(Value);

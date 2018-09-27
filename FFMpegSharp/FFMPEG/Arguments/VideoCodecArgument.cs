@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Represents video codec parameter
+    /// </summary>
     public class VideoCodecArgument : Argument<VideoCodec>
     {
         public int Bitrate { get; protected set; } = 0;
@@ -24,6 +27,10 @@ namespace FFMpegSharp.FFMPEG.Arguments
             Bitrate = bitrate;
         }
 
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Video(Value, Bitrate);

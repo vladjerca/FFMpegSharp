@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Represents frame rate parameter
+    /// </summary>
     public class FrameRateArgument : Argument<double>
     {
         public FrameRateArgument()
@@ -16,6 +19,10 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public override string GetStringValue()
         {
             return ArgumentsStringifier.FrameRate(Value);

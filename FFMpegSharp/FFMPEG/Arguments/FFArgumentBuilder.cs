@@ -9,8 +9,16 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Builds parameters string from <see cref="ArgumentsContainer"/> that would be passed to ffmpeg process
+    /// </summary>
     public class FFArgumentBuilder : IArgumentBuilder
     {
+        /// <summary>
+        /// Builds parameters string from <see cref="ArgumentsContainer"/> that would be passed to ffmpeg process
+        /// </summary>
+        /// <param name="container">Container of arguments</param>
+        /// <returns>Parameters string</returns>
         public string BuildArguments(ArgumentsContainer container)
         {
             if (!container.ContainsInputOutput())
@@ -39,7 +47,13 @@ namespace FFMpegSharp.FFMPEG.Arguments
             return sb.ToString();
         }
 
-
+        /// <summary>
+        /// Builds parameters string from <see cref="ArgumentsContainer"/> that would be passed to ffmpeg process
+        /// </summary>
+        /// <param name="container">Container of arguments</param>
+        /// <param name="input">Input file</param>
+        /// <param name="output">Output file</param>
+        /// <returns>Parameters string</returns>
         public string BuildArguments(ArgumentsContainer container, FileInfo input, FileInfo output)
         {
             CheckContainerException(container);
@@ -85,7 +99,7 @@ namespace FFMpegSharp.FFMPEG.Arguments
             }
         }
 
-        public Argument GetInput(ArgumentsContainer container)
+        private Argument GetInput(ArgumentsContainer container)
         {
             if (container.ContainsKey(typeof(InputArgument)))
                 return container[typeof(InputArgument)];

@@ -8,6 +8,9 @@ using FFMpegSharp.FFMPEG.Enums;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Represents size parameter
+    /// </summary>
     public class SizeArgument : ScaleArgument
     {
         public SizeArgument()
@@ -26,6 +29,10 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Size(Value);

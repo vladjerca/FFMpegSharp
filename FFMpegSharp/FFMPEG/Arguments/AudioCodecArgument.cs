@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Represents parameter of audio codec and it's quality
+    /// </summary>
     public class AudioCodecArgument : Argument<AudioCodec>
     {
+        /// <summary>
+        /// Bitrate of audio channel
+        /// </summary>
         public int Bitrate { get; protected set; } = (int)AudioQuality.Normal;
 
         public AudioCodecArgument()
@@ -28,7 +34,11 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
             Bitrate = bitrate;
         }
-        
+
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Audio(Value, Bitrate);

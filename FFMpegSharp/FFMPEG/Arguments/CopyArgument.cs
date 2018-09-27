@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Represents parameter of copy parameter
+    /// Defines if channel (audio, video or both) should be copied to output file
+    /// </summary>
     public class CopyArgument : Argument<Channel>
     {
         public CopyArgument()
@@ -18,6 +22,10 @@ namespace FFMpegSharp.FFMPEG.Arguments
         {
         }
 
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Copy(Value);

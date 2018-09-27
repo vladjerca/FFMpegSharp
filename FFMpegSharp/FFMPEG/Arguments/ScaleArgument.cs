@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace FFMpegSharp.FFMPEG.Arguments
 {
+    /// <summary>
+    /// Represents scale parameter
+    /// </summary>
     public class ScaleArgument : Argument<Size>
     {
         public ScaleArgument()
@@ -27,6 +30,10 @@ namespace FFMpegSharp.FFMPEG.Arguments
             Value = videosize == VideoSize.Original ? new Size(-1, -1) : new Size(-1, (int)videosize);
         }
 
+        /// <summary>
+        /// String representation of the argument
+        /// </summary>
+        /// <returns>String representation of the argument</returns>
         public override string GetStringValue()
         {
             return ArgumentsStringifier.Scale(Value);
