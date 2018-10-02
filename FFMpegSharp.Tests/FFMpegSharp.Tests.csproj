@@ -57,6 +57,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ArgumentBuilderTests.cs" />
     <Compile Include="AudioTest.cs" />
     <Compile Include="BaseTest.cs" />
     <Compile Include="Resources\VideoLibrary.cs" />

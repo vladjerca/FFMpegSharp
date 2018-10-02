@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FFMpegSharp.FFMPEG.Enums;
+using System;
 
 namespace FFMpegSharp.Enums
 {
@@ -11,6 +12,19 @@ namespace FFMpegSharp.Enums
                 case VideoType.Mp4: return Mp4;
                 case VideoType.Ogv: return Ogv;
                 case VideoType.Ts: return Ts;
+                case VideoType.WebM: return WebM;
+                default: throw new Exception("The extension for this video type is not defined.");
+            }
+        }
+        public static string ForCodec(VideoCodec type)
+        {
+            switch (type)
+            {
+                case VideoCodec.LibX264: return Mp4;
+                case VideoCodec.LibVpx: return WebM;
+                case VideoCodec.LibTheora: return Ogv;
+                case VideoCodec.MpegTs: return Ts;
+                case VideoCodec.Png: return Png;
                 default: throw new Exception("The extension for this video type is not defined.");
             }
         }
@@ -19,5 +33,6 @@ namespace FFMpegSharp.Enums
         public static readonly string Ts = ".ts";
         public static readonly string Ogv = ".ogv";
         public static readonly string Png = ".png";
+        public static readonly string WebM = ".webm";
     }
 }

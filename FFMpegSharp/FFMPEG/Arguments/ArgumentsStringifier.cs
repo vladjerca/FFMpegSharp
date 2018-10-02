@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-namespace FFMpegSharp.FFMPEG.Atomic
+namespace FFMpegSharp.FFMPEG.Arguments
 {
-    internal static class Arguments
+    internal static class ArgumentsStringifier
     {
         internal static string Speed(Speed speed)
         {
@@ -20,7 +20,27 @@ namespace FFMpegSharp.FFMPEG.Atomic
 
         internal static string Audio(AudioCodec codec, AudioQuality bitrate)
         {
-            return $"-codec:a {codec.ToString().ToLower()} -b:a {(int)bitrate}k -strict experimental ";
+            return Audio(codec) + Audio(bitrate);
+        }
+
+        internal static string Audio(AudioCodec codec, int bitrate)
+        {
+            return Audio(codec) + Audio(bitrate);
+        }
+
+        internal static string Audio(AudioCodec codec)
+        {
+            return $"-codec:a {codec.ToString().ToLower()} ";
+        }
+
+        internal static string Audio(AudioQuality bitrate)
+        {
+            return Audio((int)bitrate);
+        }
+
+        internal static string Audio(int bitrate)
+        {
+            return $"-b:a {bitrate}k -strict experimental ";
         }
 
         internal static string Video(VideoCodec codec, int bitrate = 0)
@@ -38,15 +58,20 @@ namespace FFMpegSharp.FFMPEG.Atomic
         internal static string Threads(bool multiThread)
         {
             var threadCount = multiThread
-                ? Environment.ProcessorCount.ToString()
-                : "1";
+                ? Environment.ProcessorCount
+                : 1;
 
-            return $"-threads {threadCount} ";
+            return Threads(threadCount);
+        }
+
+        internal static string Threads(int threads)
+        {        
+            return $"-threads {threads} ";
         }
 
         internal static string Input(Uri uri)
         {
-            return $"-i \"{uri.AbsoluteUri}\" ";
+            return Input(uri.AbsolutePath);
         }
 
         internal static string Disable(Channel type)
@@ -74,6 +99,11 @@ namespace FFMpegSharp.FFMPEG.Atomic
 
         internal static string Output(FileInfo output)
         {
+            return $"\"{output.FullName}\"";
+        }
+
+        internal static string Output(string output)
+        {
             return $"\"{output}\"";
         }
 
@@ -82,9 +112,19 @@ namespace FFMpegSharp.FFMPEG.Atomic
             return $"-i \"{template}\" ";
         }
 
+        internal static string Scale(VideoSize size, int width =-1)
+        {
+            return size == VideoSize.Original ? string.Empty : Scale(width, (int)size);
+        }
+
+        internal static string Scale(int width, int height)
+        {
+            return $"-vf scale={width}:{height} ";
+        }
+
         internal static string Scale(Size size)
         {
-            return $"-vf scale={size.Width}:{size.Height} ";
+            return Scale(size.Width, size.Height);
         }
 
         internal static string Size(Size? size)
@@ -137,22 +177,22 @@ namespace FFMpegSharp.FFMPEG.Atomic
             return $"-vframes {number} ";
         }
 
-        public static string Loop(int count)
+        internal static string Loop(int count)
         {
             return $"-loop {count} ";
         }
 
-        public static string FinalizeAtShortestInput(bool applicable)
+        internal static string FinalizeAtShortestInput(bool applicable)
         {
             return applicable ? "-shortest " : string.Empty;
         }
 
-        public static string InputConcat(IEnumerable<string> paths)
+        internal static string InputConcat(IEnumerable<string> paths)
         {
             return $"-i \"concat:{string.Join(@"|", paths)}\" ";
         }
 
-        internal static object FrameRate(double frameRate)
+        internal static string FrameRate(double frameRate)
         {
             return $"-r {frameRate} ";
         }

@@ -113,7 +113,7 @@ namespace FFMpegSharp.FFMPEG
 
         private string RunProcess(string args)
         {
-            RunProcess(args, _ffprobePath, rStandardOutput: true);
+            CreateProcess(args, _ffprobePath, rStandardOutput: true);
 
             string output;
 

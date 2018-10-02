@@ -243,6 +243,7 @@ static void Main(string[] args)
     encoder.Stop();
 }
 ```
+### Enums
 
 Video Size enumeration:
 
@@ -271,5 +272,63 @@ public enum Speed
     VeryFast,
     SuperFast,
     UltraFast
+}
+```
+Audio codecs enumeration:
+
+```csharp
+public enum AudioCodec
+{
+        Aac,
+        LibVorbis
+}
+```
+
+Audio quality presets enumeration:
+
+```csharp
+public enum AudioQuality
+{
+        Ultra = 384,
+        Hd = 192,
+        Normal = 128,
+        Low = 64
+}
+```
+
+Video codecs enumeration:
+
+```csharp
+public enum VideoCodec
+{
+        LibX264,
+        LibVpx,
+        LibTheora,
+        Png,
+        MpegTs
+}
+```
+### ArgumentBuilder
+Custom video converting presets could be created with help of `ArgumentsContainer` class:
+```csharp
+var container = new ArgumentsContainer();
+container.Add(new VideoCodecArgument(VideoCodec.LibX264));
+container.Add(new ScaleArgument(VideoSize.Hd));
+
+var ffmpeg = new FFMpeg();
+var result = ffmpeg.Convert(container, new FileInfo("input.mp4"), new FileInfo("output.mp4"));
+```
+
+Other availible arguments could be found in `FFMpegSharp.FFMPEG.Arguments` namespace.
+
+If you need to create your custom argument, you just need to create new class, that is inherited from `Argument`, `Argument<T>` or `Argument<T1, T2>`
+For example:
+```csharp
+public class OverrideArgument : Argument
+{
+    public override string GetStringValue()
+    {
+        return "-y";
+    }
 }
 ```
