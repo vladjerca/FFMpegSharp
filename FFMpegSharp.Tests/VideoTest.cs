@@ -26,6 +26,18 @@ namespace FFMpegSharp.Tests
 
                 var outputVideo = new VideoInfo(output.FullName);
 
+                Assert.IsTrue(File.Exists(output.FullName));
+                Assert.AreEqual(outputVideo.Duration, input.Duration);
+                if (size == VideoSize.Original)
+                {
+                    Assert.AreEqual(outputVideo.Width, input.Width);
+                    Assert.AreEqual(outputVideo.Height, input.Height);
+                } else
+                {
+                    Assert.AreNotEqual(outputVideo.Width, input.Width);
+                    Assert.AreNotEqual(outputVideo.Height, input.Height);
+                    Assert.AreEqual(outputVideo.Height, (int)size);
+                }
                 return File.Exists(output.FullName) &&
                        outputVideo.Duration == input.Duration &&
                        (
@@ -49,7 +61,7 @@ namespace FFMpegSharp.Tests
             }
         }
 
-        public bool Convert(VideoType type, ArgumentsContainer container)
+        public void Convert(VideoType type, ArgumentsContainer container)
         {
             var output = Input.OutputLocation(type);
 
@@ -63,24 +75,30 @@ namespace FFMpegSharp.Tests
 
                 Encoder.Convert(container);
 
-
                 var outputVideo = new VideoInfo(output.FullName);
 
-                return File.Exists(output.FullName) &&
-                       outputVideo.Duration == input.Duration &&
-                       (
-                           (
-                           scaling == null &&
-                           outputVideo.Width == input.Width &&
-                           outputVideo.Height == input.Height
-                           )
-                           ||
-                           (
-                           scaling != null &&
-                           (outputVideo.Width == scaling.Value.Width || scaling.Value.Width == -1)  &&
-                           (outputVideo.Height == scaling.Value.Height || scaling.Value.Height == -1) 
-                           )
-                       );
+                Assert.IsTrue(File.Exists(output.FullName));
+                Assert.AreEqual(outputVideo.Duration, input.Duration);
+
+                if (scaling == null)
+                {
+                    Assert.AreEqual(outputVideo.Width, input.Width);
+                    Assert.AreEqual(outputVideo.Height, input.Height);
+                } else
+                {
+                    if (scaling.Value.Width != -1)
+                    {
+                        Assert.AreEqual(outputVideo.Width, scaling.Value.Width);
+                    }
+
+                    if (scaling.Value.Height != -1)
+                    {
+                        Assert.AreEqual(outputVideo.Height, scaling.Value.Height);
+                    }
+
+                    Assert.AreNotEqual(outputVideo.Width, input.Width);
+                    Assert.AreNotEqual(outputVideo.Height, input.Height);
+                }
             }
             finally
             {
@@ -92,7 +110,7 @@ namespace FFMpegSharp.Tests
         [TestMethod]
         public void Video_ToMP4()
         {
-            Assert.IsTrue(Convert(VideoType.Mp4));
+            Convert(VideoType.Mp4);
         }
 
         [TestMethod]
@@ -100,13 +118,13 @@ namespace FFMpegSharp.Tests
         {
             var container = new ArgumentsContainer();
             container.Add(new VideoCodecArgument(VideoCodec.LibX264));
-            Assert.IsTrue(Convert(VideoType.Mp4, container));
+            Convert(VideoType.Mp4, container);
         }
 
         [TestMethod]
         public void Video_ToTS()
         {
-            Assert.IsTrue(Convert(VideoType.Ts));
+            Convert(VideoType.Ts);
         }
 
         [TestMethod]
@@ -116,14 +134,14 @@ namespace FFMpegSharp.Tests
             container.Add(new CopyArgument());
             container.Add(new BitStreamFilterArgument(Channel.Video, Filter.H264_Mp4ToAnnexB));
             container.Add(new ForceFormatArgument(VideoCodec.MpegTs));
-            Assert.IsTrue(Convert(VideoType.Ts, container));
+            Convert(VideoType.Ts, container);
         }
 
 
         [TestMethod]
         public void Video_ToOGV_Resize()
         {
-            Assert.IsTrue(Convert(VideoType.Ogv, true, VideoSize.Ed));
+            Convert(VideoType.Ogv, true, VideoSize.Ed);
         }
 
         [TestMethod]
@@ -132,13 +150,13 @@ namespace FFMpegSharp.Tests
             var container = new ArgumentsContainer();
             container.Add(new ScaleArgument(VideoSize.Ed));
             container.Add(new VideoCodecArgument(VideoCodec.LibTheora));
-            Assert.IsTrue(Convert(VideoType.Ogv, container));
+            Convert(VideoType.Ogv, container);
         }
 
         [TestMethod]
         public void Video_ToMP4_Resize()
         {
-            Assert.IsTrue(Convert(VideoType.Mp4, true, VideoSize.Ed));
+            Convert(VideoType.Mp4, true, VideoSize.Ed);
         }
 
         [TestMethod]
@@ -147,31 +165,31 @@ namespace FFMpegSharp.Tests
             var container = new ArgumentsContainer();
             container.Add(new ScaleArgument(VideoSize.Ld));
             container.Add(new VideoCodecArgument(VideoCodec.LibX264));
-            Assert.IsTrue(Convert(VideoType.Mp4, container));
+            Convert(VideoType.Mp4, container);
         }
 
         [TestMethod]
         public void Video_ToOGV()
         {
-            Assert.IsTrue(Convert(VideoType.Ogv));
+            Convert(VideoType.Ogv);
         }
 
         [TestMethod]
         public void Video_ToMP4_MultiThread()
         {
-            Assert.IsTrue(Convert(VideoType.Mp4, true));
+            Convert(VideoType.Mp4, true);
         }
 
         [TestMethod]
         public void Video_ToTS_MultiThread()
         {
-            Assert.IsTrue(Convert(VideoType.Ts, true));
+            Convert(VideoType.Ts, true);
         }
 
         [TestMethod]
         public void Video_ToOGV_MultiThread()
         {
-            Assert.IsTrue(Convert(VideoType.Ogv, true));
+            Convert(VideoType.Ogv, true);
         }
 
         [TestMethod]
