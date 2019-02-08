@@ -1,4 +1,6 @@
-![FFMpeg Sharp](https://media.licdn.com/media/gcrc/dms/image/C5612AQFDCKxnyQ3tmw/article-cover_image-shrink_600_2000/0?e=1542844800&v=beta&t=ntfxKUaio7wjO2VFRL4o7gyoIPNKT95SPt94etMFuzw)
+# SUPPORT IS BEING DROPPED
+# THE NEW PORTED REPOSITORY CAN BE FOUND HERE
+# [FFMpegCore](https://github.com/vladjerca/FFMpegCore)
 
 # FFMpegSharp [![NuGet Badge](https://buildstats.info/nuget/FFMpegSharp)](https://www.nuget.org/packages/FFMpegSharp/)
 
