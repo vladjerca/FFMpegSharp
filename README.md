@@ -2,7 +2,8 @@
 # THE NEW PORTED REPOSITORY CAN BE FOUND HERE
 # [FFMpegCore](https://github.com/vladjerca/FFMpegCore)
 
-# FFMpegSharp [![NuGet Badge](https://buildstats.info/nuget/FFMpegSharp)](https://www.nuget.org/packages/FFMpegSharp/)
+# FFMpegSharp         
+ ## [![NuGet Badge](https://buildstats.info/nuget/FFMpegSharp)](https://www.nuget.org/packages/FFMpegSharp/)
 
 ## Setup
 
